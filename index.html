@@ -1425,9 +1425,11 @@ $('xOk').onclick=function(){
   if(fotoA)o.foto=fotoA;
   
   db.doc('ambientes/'+slug(cs)+'--'+slug(n)).set(o).then(function(){
+    amb[cs+'|'+n] = o; // <-- ESTA LÍNEA ES LA CLAVE. Fuerza la actualización en la memoria local.
     $('dlgA').close();fillSelects();renderCfg(); showToast('Ambiente guardado.','success');
   }).catch(function(e){ showToast(e.message||'Error al guardar', 'error'); });
 };
+
 $('sList').addEventListener('click',function(ev){var bt=ev.target.closest('button');if(!bt||!isSuper()||!db)return;var k=bt.dataset.k,n=bt.dataset.n;
   if(bt.dataset.sed==='e')openSede(k);else if(bt.dataset.sed==='a')openAmb(k,null);
   else if(bt.dataset.sed==='d'){
