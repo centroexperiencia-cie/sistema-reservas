@@ -1384,25 +1384,50 @@ function renderUsers(){$('uNote').textContent=isSuper()?'':'Solo un administrado
 function openSede(n){eSede=n;fotoS=null;var i=(n&&sinfo[n])||{};$('sTit').textContent=n?'Editar sede':'Nueva sede';$('sN').value=n||'';$('sN').disabled=!!n;$('sCod').value=i.codigo||'';$('sD').value=i.dir||'';$('sF').value='';$('sPrev').hidden=!i.foto;if(i.foto)$('sPrev').src=i.foto;$('dlgS').showModal()}
 $('sF').onchange=function(){var f=this.files[0];if(f)shrink(f,function(d){fotoS=d;$('sPrev').src=d;$('sPrev').hidden=false},900)};
 $('sC').onclick=function(){$('dlgS').close()};
-$('sOk').onclick=function(){if(!isSuper()||!db)return;var n=$('sN').value.trim();if(!n){showToast('Indica el nombre de la sede.', 'error');return}
-  var cod=$('sCod').value.trim().toUpperCase();if(!cod){showToast('Indica la nomenclatura (Ej. CZC).', 'error');return}
+
+$('sOk').onclick=function(){
+  if(!isSuper()||!db)return;
+  var n=$('sN').value.trim();
+  if(!n){showToast('Indica el nombre de la sede.', 'error');return}
+  var cod=$('sCod').value.trim().toUpperCase();
+  if(!cod){showToast('Indica la nomenclatura (Ej. CZC).', 'error');return}
   if(!eSede&&sedes[n]){showToast('Esa sede ya existe.', 'error');return}
-  if(!sedes[n])sedes[n]=[];saveCfg();var o=Object.assign({},sinfo[n]||{},{nombre:n,codigo:cod,dir:$('sD').value.trim()});if(fotoS)o.foto=fotoS;
-  db.doc('sedesinfo/'+slug(n)).set(o).then(function(){$('dlgS').close();fillSelects();renderCfg(); showToast('Sede guardada.','success');}).catch(err)};
+  if(!sedes[n])sedes[n]=[];
+  saveCfg();
+  var o=Object.assign({},sinfo[n]||{},{nombre:n,codigo:cod,dir:$('sD').value.trim()});
+  if(fotoS)o.foto=fotoS;
+  db.doc('sedesinfo/'+slug(n)).set(o).then(function(){
+    $('dlgS').close();fillSelects();renderCfg(); showToast('Sede guardada.','success');
+  }).catch(function(e){ showToast(e.message||'Error al guardar', 'error'); });
+};
+
 function openAmb(sd,n){cs=sd;eAmb=n;fotoA=null;var i=(n&&amb[sd+'|'+n])||{};$('aTit').textContent=n?'Editar ambiente':'Nuevo ambiente';$('aSd').textContent='Sede: '+sd;$('xN').value=n||'';$('xN').disabled=!!n;
   $('xA').value=i.aforo||'';$('xP').value=i.puestos||'';$('xE').value=i.encargado||'';$('xF').value='';$('xPrev').hidden=!i.foto;if(i.foto)$('xPrev').src=i.foto;
   $('xIndiv').checked = !!i.isIndiv; $('xSubBox').style.display = i.isIndiv ? 'block' : 'none'; $('xSub').value = (i.subsp || []).join(', ');
   $('dlgA').showModal()}
+
 $('xIndiv').onchange=function(){ $('xSubBox').style.display = this.checked ? 'block' : 'none'; };
 $('xF').onchange=function(){var f=this.files[0];if(f)shrink(f,function(d){fotoA=d;$('xPrev').src=d;$('xPrev').hidden=false},600)};
 $('xC').onclick=function(){$('dlgA').close()};
-$('xOk').onclick=function(){if(!isSuper()||!db)return;var n=$('xN').value.trim();if(!n){showToast('Indica el nombre del ambiente.', 'error');return}
+
+$('xOk').onclick=function(){
+  if(!isSuper()||!db)return;
+  var n=$('xN').value.trim();
+  if(!n){showToast('Indica el nombre del ambiente.', 'error');return}
   if(!eAmb&&(sedes[cs]||[]).indexOf(n)>=0){showToast('Ese ambiente ya existe en la sede.', 'error');return}
-  if(!sedes[cs])sedes[cs]=[];if(sedes[cs].indexOf(n)<0)sedes[cs].push(n);saveCfg();
+  if(!sedes[cs])sedes[cs]=[];
+  if(sedes[cs].indexOf(n)<0)sedes[cs].push(n);
+  saveCfg();
   var subArr = $('xSub').value.split(',').map(function(x){return x.trim()}).filter(Boolean);
   if($('xIndiv').checked && !subArr.length) { showToast('Ingresa al menos un espacio individual separado por comas.', 'error'); return; }
-  var o=Object.assign({},amb[cs+'|'+n]||{},{sede:cs,nombre:n,aforo:+$('xA').value||0,puestos:+$('xP').value||0,encargado:$('xE').value.trim(), isIndiv:$('xIndiv').checked, subsp:subArr});if(fotoA)o.foto=fotoA;
-  db.doc('ambientes/'+slug(cs)+'--'+slug(n)).set(o).then(function(){$('dlgA').close();fillSelects();renderCfg(); showToast('Ambiente guardado.','success');}).catch(err)};
+  
+  var o=Object.assign({},amb[cs+'|'+n]||{},{sede:cs,nombre:n,aforo:+$('xA').value||0,puestos:+$('xP').value||0,encargado:$('xE').value.trim(), isIndiv:$('xIndiv').checked, subsp:subArr});
+  if(fotoA)o.foto=fotoA;
+  
+  db.doc('ambientes/'+slug(cs)+'--'+slug(n)).set(o).then(function(){
+    $('dlgA').close();fillSelects();renderCfg(); showToast('Ambiente guardado.','success');
+  }).catch(function(e){ showToast(e.message||'Error al guardar', 'error'); });
+};
 $('sList').addEventListener('click',function(ev){var bt=ev.target.closest('button');if(!bt||!isSuper()||!db)return;var k=bt.dataset.k,n=bt.dataset.n;
   if(bt.dataset.sed==='e')openSede(k);else if(bt.dataset.sed==='a')openAmb(k,null);
   else if(bt.dataset.sed==='d'){
