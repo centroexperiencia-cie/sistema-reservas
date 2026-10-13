@@ -592,7 +592,7 @@ function render(){
     var m=START+s*30,hr=(m%60===0);h+='<div class="t">'+(hr?hm(m):'')+'</div>';
     for(var d2=0;d2<7;d2++){
       var date=iso(dayOf(d2)),b=slotBooking(list,date,m),cls='c'+(hr?' hr':''),txt='';
-      var past=date<todayIso||(date===todayIso&&m+30<=nowM);
+      var dw=dayOf(d2).getDay(); var past=date<todayIso||(date===todayIso&&m+30<=nowM)||dw===0||(dw===6&&m>=12*60);
       if(b){cls+=b.estado==='aprobada'?' apr':b.estado==='info'?' inf':' pen';if(m===b.inicio)txt=(b.estado==='aprobada'?'✔ ':b.estado==='info'?'❓ ':'⏳ ')+esc(b.nombre||'')}
       else if(past)cls+=' past';else if(sel&&sel.d===d2&&s>=Math.min(sel.a,sel.b)&&s<=Math.max(sel.a,sel.b))cls+=' sel';
       h+='<div class="'+cls+'" data-d="'+d2+'" data-s="'+s+'">'+txt+'</div>';
