@@ -723,7 +723,7 @@ dialog::backdrop { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(4px
     <div class="bar">
       <b style="color:var(--pri); font-size:16px; display:flex; align-items:center; gap:6px;">⚡ Reserva Manual Rápida</b>
     </div>
-    <p class="mut" style="margin-bottom:16px;">Selecciona la sede, el ambiente, marca un rango en la grilla y haz clic en <b>Bloquear Espacio</b>. Solo se te pedirá el nombre del evento. La reserva quedará aprobada a tu nombre.</p>
+    <p class="mut" style="margin-bottom:16px;">Selecciona la sede y el ambiente. Para reservar más tiempo, <b>haz clic sobre la primera franja y arrastra</b> hasta la hora de término; puedes seleccionar varias franjas consecutivas de 30 minutos (1 hora, 1 hora y media, 2 horas o más). Luego haz clic en <b>Bloquear Espacio</b>. Solo se te pedirá el nombre del evento y la reserva quedará aprobada a tu nombre.</p>
     
     <div class="f2" style="margin-bottom:16px;">
         <div><label>Sede</label><select id="sede"></select></div>
@@ -743,7 +743,7 @@ dialog::backdrop { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(4px
     </div>
     
     <div class="bar2" style="margin-top:14px;">
-        <span id="selinfo">Marca y arrastra sobre un día para elegir el horario</span>
+        <span id="selinfo">Haz clic y arrastra para seleccionar el horario (puedes marcar varias franjas)</span>
         <span>
             <button class="sec" id="clr" style="background:rgba(255,255,255,0.15);color:#fff;border-color:#fff">Limpiar</button> 
             <button class="ok" id="res" disabled>⚡ Bloquear Espacio</button>
@@ -1104,7 +1104,7 @@ function render(){
     }
   }
   $('grid').innerHTML=h;
-  if(sel){var a=Math.min(sel.a,sel.b),z=Math.max(sel.a,sel.b)+1;$('selinfo').textContent=DAYS[sel.d]+' '+dayOf(sel.d).getDate()+'/'+(dayOf(sel.d).getMonth()+1)+' · '+hm(START+a*30)+' → '+hm(START+z*30)+' · '+((z-a)/2)+' h';$('res').disabled=false}
+  if(sel){var a=Math.min(sel.a,sel.b),z=Math.max(sel.a,sel.b)+1;$('selinfo').textContent=DAYS[sel.d]+' '+dayOf(sel.d).getDate()+'/'+(dayOf(sel.d).getMonth()+1)+' · '+hm(pStart()+a*R.paso)+' → '+hm(pStart()+z*R.paso)+' · '+(((z-a)*R.paso)/60)+' h';$('res').disabled=false}
   else{$('selinfo').textContent='Marca y arrastra sobre un día para elegir el horario';$('res').disabled=true}
   renderList();renderPanel();renderCal(); renderNotifs();
 }
@@ -1120,12 +1120,31 @@ function renderList(){
 function cellAt(x,y){var el=document.elementFromPoint(x,y);return el&&el.classList&&el.classList.contains('c')?el:null}
 function canPick(el){return el&&!/past|pen|apr|inf/.test(el.className)}
 var g=$('grid');
-g.addEventListener('pointerdown',function(ev){var el=ev.target.closest('.c');if(el&&/pen|apr|inf/.test(el.className)){if(isAdmin()){var bb=manualSlotBooking(cur(),iso(dayOf(+el.dataset.d)),START+(+el.dataset.s)*30);if(bb)openDetail(bb.id, false)}return}if(!canPick(el))return;dragging=true;sel={d:+el.dataset.d,a:+el.dataset.s,b:+el.dataset.s};render()});
-g.addEventListener('pointermove',function(ev){if(!dragging)return;var el=cellAt(ev.clientX,ev.clientY);if(!canPick(el)||+el.dataset.d!==sel.d)return;
+g.addEventListener('pointerdown',function(ev){
+  var el=ev.target.closest('.c');
+  if(el&&/pen|apr|inf/.test(el.className)){
+    if(isAdmin()){var bb=manualSlotBooking(cur(),iso(dayOf(+el.dataset.d)),pStart()+(+el.dataset.s)*R.paso);if(bb)openDetail(bb.id, false)}
+    return;
+  }
+  if(!canPick(el))return;
+  ev.preventDefault();
+  dragging=true;
+  sel={d:+el.dataset.d,a:+el.dataset.s,b:+el.dataset.s};
+  if(g.setPointerCapture)try{g.setPointerCapture(ev.pointerId)}catch(_){}
+  render();
+});
+g.addEventListener('pointermove',function(ev){
+  if(!dragging||!sel)return;
+  var el=cellAt(ev.clientX,ev.clientY);
+  if(!canPick(el)||+el.dataset.d!==sel.d)return;
   var s=+el.dataset.s,lo=Math.min(sel.a,s),hi=Math.max(sel.a,s),list=cur(),date=iso(dayOf(sel.d));
-  for(var i=lo;i<=hi;i++)if(slotBooking(list,date,START+i*30))return;
-  if(s!==sel.b){sel.b=s;render()}});
-window.addEventListener('pointerup',function(){dragging=false});
+  for(var i=lo;i<=hi;i++)if(slotBooking(list,date,pStart()+i*R.paso))return;
+  if(s!==sel.b){sel.b=s;render()}
+});
+function stopManualDrag(){dragging=false}
+g.addEventListener('pointerup',stopManualDrag);
+g.addEventListener('pointercancel',stopManualDrag);
+window.addEventListener('pointerup',stopManualDrag);
 $('prev').onclick=function(){weekStart.setDate(weekStart.getDate()-7);sel=null;render()};$('next').onclick=function(){weekStart.setDate(weekStart.getDate()+7);sel=null;render()};
 $('clr').onclick=function(){sel=null;render()};$('sede').onchange=function(){sede=this.value;aula=null;sel=null;fillSelects();syncManualSubSelect();render()};$('aula').onchange=function(){aula=this.value;sel=null;syncManualSubSelect();render()};$('manualSub').onchange=function(){sel=null;render()};
 $('res').onclick = function() {
@@ -2566,9 +2585,16 @@ function generarPlantillaCorreo(reserva, estado, obs) {
     };
     var cfg = eInfo[estado] || eInfo['pendiente'];
     
-    var ambData = amb[reserva.sede + '|' + (reserva.aulaBase || reserva.aula)] || {};
-    var encargadoNombre = (ambData.encargado || 'Equipo de Soporte').split('@')[0].toUpperCase().replace(/\./g, ' ');
-    var encargadoCorreo = ambData.encargado || 'cdccoordcus@continental.edu.pe';
+    // Contacto institucional genérico según sede; evita mostrar encargados/correos
+    // antiguos o incorrectos guardados en la configuración de cada ambiente.
+    var sedeCorreo = String(reserva.sede || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    var contactoSoporte = sedeCorreo.indexOf('andahuaylas') >= 0
+        ? { nombre: 'EQUIPO DE SOPORTE ANDAHUAYLAS', correo: 'cexcoordand@continental.edu.pe' }
+        : sedeCorreo.indexOf('huanuco') >= 0
+            ? { nombre: 'EQUIPO DE SOPORTE HUANUCO', correo: 'cexcoordhco@continental.edu.pe' }
+            : { nombre: 'EQUIPO DE SOPORTE CUSCO', correo: 'cexcoordcus@continental.edu.pe' };
+    var encargadoNombre = contactoSoporte.nombre;
+    var encargadoCorreo = contactoSoporte.correo;
     
     var stPen = 'color: #5a00cc; font-weight: bold;';
     var stRev = estado === 'info' || estado === 'aprobada' || estado === 'rechazada' ? 'color: #5a00cc; font-weight: bold;' : 'color: #a0a0a0;';
