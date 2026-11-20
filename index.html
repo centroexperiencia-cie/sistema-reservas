@@ -600,7 +600,7 @@ dialog::backdrop { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(4px
   </div>
 </div>
 
-<div class="nav"><button class="act" data-v="ini">🏠 Inicio</button><button data-v="portal">🌐 Portal público</button><button data-v="hor" id="navHor" hidden>📋 Reservas realizadas</button><button data-v="res" id="navRes" hidden>⚡ Reserva Manual</button><button data-v="cal" id="navCal" hidden>📅 Calendario Visual</button><button data-v="res" id="navRes" hidden>⚡ Reserva Manual</button><button data-v="res" id="navRes" hidden>⚡ Reserva Manual</button><button data-v="ti" id="navTi" hidden>💻 Reporte TI</button><button data-v="rep" id="navRep" hidden>📊 Reportes</button><button data-v="cfg" id="navPanel" hidden>⚙ Configuración</button></div>
+<div class="nav"><button class="act" data-v="ini">🏠 Inicio</button><button data-v="portal">🌐 Portal público</button><button data-v="hor" id="navHor" hidden>📋 Reservas realizadas</button><button data-v="res" id="navRes" hidden>⚡ Reserva Manual</button><button data-v="cal" id="navCal" hidden>📅 Calendario Visual</button><button data-v="ti" id="navTi" hidden>💻 Reporte TI</button><button data-v="rep" id="navRep" hidden>📊 Reportes</button><button data-v="cfg" id="navPanel" hidden>⚙ Configuración</button></div>
 
 <div id="vPortal">
   <div class="phead"><div class="logo">CENTRO DE<br>EXPERIENCIA</div><b style="font-size:16px;">Reserva de Espacios y Ambientes</b><span class="sp"></span><span class="pill">Reserva de Ambientes Físicos</span><button class="sec" id="pLogin">🔒 Acceso personal</button><button class="sec" id="pBack" hidden>↩ Volver a vista de personal</button></div>
@@ -610,7 +610,7 @@ dialog::backdrop { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(4px
 <main id="vInicio" class="one" hidden><section class="card hero">
   <div class="logo" style="display:inline-block">CENTRO DE<br>EXPERIENCIA</div>
   <h2 id="iTit">¡Bienvenido!</h2>
-  <p class="mut">Reserva ambientes en cualquiera de las sedes del Centro de Experiencia, con disponibilidad en tiempo real.</p>
+  <p class="mut" id="iAbout">Reserva ambientes en cualquiera de las sedes del Centro de Experiencia, con disponibilidad en tiempo real.</p>
   <button onclick="document.querySelector('[data-v=portal]').click()">🌐 Abrir portal público</button>
   <div class="kp" id="iK" style="margin-top:28px;text-align:left"></div>
 </section></main>
@@ -723,7 +723,7 @@ dialog::backdrop { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(4px
     <div class="bar">
       <b style="color:var(--pri); font-size:16px; display:flex; align-items:center; gap:6px;">⚡ Reserva Manual Rápida</b>
     </div>
-    <p class="mut" style="margin-bottom:16px;">Selecciona la sede y el ambiente. Para reservar más tiempo, <b>haz clic sobre la primera franja y arrastra</b> hasta la hora de término; puedes seleccionar varias franjas consecutivas de 30 minutos (1 hora, 1 hora y media, 2 horas o más). Luego haz clic en <b>Bloquear Espacio</b>. Solo se te pedirá el nombre del evento y la reserva quedará aprobada a tu nombre.</p>
+    <p class="mut" style="margin-bottom:16px;">Arrastra de la primera franja a la última para agregar un horario. Puedes seguir seleccionando en otros días y semanas. Para quitar un bloque, haz clic sobre él. Pulsa <b>Bloquear Espacio</b> para guardar todos los horarios con un solo nombre de evento.</p>
     
     <div class="f2" style="margin-bottom:16px;">
         <div><label>Sede</label><select id="sede"></select></div>
@@ -743,7 +743,7 @@ dialog::backdrop { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(4px
     </div>
     
     <div class="bar2" style="margin-top:14px;">
-        <span id="selinfo">Haz clic y arrastra para seleccionar el horario (puedes marcar varias franjas)</span>
+        <span id="selinfo" aria-live="polite">Selecciona uno o varios horarios</span>
         <span>
             <button class="sec" id="clr" style="background:rgba(255,255,255,0.15);color:#fff;border-color:#fff">Limpiar</button> 
             <button class="ok" id="res" disabled>⚡ Bloquear Espacio</button>
@@ -765,6 +765,7 @@ dialog::backdrop { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(4px
   <div class="f2"><div><label>Nombre completo *</label><input id="uN"></div><div><label>Usuario *</label><input id="uU" autocomplete="off"></div>
   <div><label>Contraseña * (mínimo 6)</label><div style="display:flex;gap:6px"><input id="uP" autocomplete="off"><button class="sec" id="uG" title="Generar contraseña">🎲</button></div></div>
   <div><label>Rol (Referencia)</label><select id="uR"><option value="personal">Personal</option><option value="admin">Administrador completo</option></select></div></div>
+  <label for="uSede">Visibilidad de sedes</label><select id="uSede"><option value="">Todas las sedes</option></select>
   
   <label style="margin-top:10px; display:block;">Módulos a los que tendrá acceso *</label>
   <div class="chk" id="uMods" style="margin-bottom:14px; background:var(--bg); padding:12px; border:1px solid var(--line); border-radius:12px;">
@@ -852,7 +853,7 @@ dialog::backdrop { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(4px
 
 <main id="vPanel" hidden>
   <section>
-    <div class="card"><b>Solicitudes pendientes (todas las sedes)</b><div id="pPend"></div></div>
+    <div class="card"><b>Solicitudes pendientes</b><div id="pPend"></div></div>
     <div class="card" style="margin-top:16px"><b>Próximas reservas aprobadas</b><div id="pApr"></div></div>
   </section>
   <aside><div class="card"><b>Sedes y ambientes</b><div id="pSedes"></div><hr style="border:0;border-top:1px solid var(--line)"><b>Agregar o editar ambiente</b>
@@ -888,6 +889,7 @@ dialog::backdrop { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(4px
 <!-- Modal Prompt Global -->
 <dialog id="dlgPrompt" style="max-width: 400px;">
     <b id="prmMsg" style="display:block; margin-bottom: 10px; font-size:14px;"></b>
+    <ul id="prmDetails" class="mut" hidden style="max-height:140px;overflow:auto;padding-left:22px"></ul>
     <input id="prmInput" style="margin-bottom: 20px; width: 100%;">
     <div style="display: flex; gap: 10px; justify-content: flex-end;">
         <button class="sec" id="prmNo">Cancelar</button>
@@ -899,6 +901,7 @@ dialog::backdrop { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(4px
 <dialog id="dlgEditMods" style="width: min(400px, 92vw);">
     <b style="font-size:16px;">Permisos del usuario</b>
     <p id="emUser" class="mut"></p>
+    <label for="emSede">Visibilidad de sedes</label><select id="emSede"><option value="">Todas las sedes</option></select>
     <div class="chk" id="emChk" style="display:flex; flex-direction:column; gap:10px; margin-top:12px; background:var(--bg); padding:12px; border-radius:12px; border:1px solid var(--line);">
         <label><input type="checkbox" value="hor"> Reservas realizadas (Aprobación/Rechazo)</label>
         <label><input type="checkbox" value="res" checked> Reserva Manual</label>
@@ -973,13 +976,14 @@ dialog::backdrop { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(4px
 
 <script>
 (function(){
-var START=420, SLOTS=28, DAYS=['LUN','MAR','MIÉ','JUE','VIE','SÁB','DOM'];
+var DAYS=['LUN','MAR','MIÉ','JUE','VIE','SÁB','DOM'];
 var DAYS_CAP=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
 var MONTHS_SHORT=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 var MONTHS_FULL=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 var sedes={"Cusco":["Centro de Experiencia"]}, bookings=[], db=null, staff=false, preview=false, view='portal', who='', inited=false;
+var siteScope='', allData={sedes:sedes, bookings:[], ambientes:[], sedesInfo:[], tiReports:[], tiStaff:[], tiSedes:[]};
 function isAdmin(){return staff&&!preview}
-var sede="Cusco", aula="Centro de Experiencia", sel=null, dragging=false, weekStart=monday(new Date());
+var sede="Cusco", aula="Centro de Experiencia", manualBlocks=[], manualDrag=null, manualSaving=false, manualPending=null, weekStart=monday(new Date());
 var calWeekStart=monday(new Date());
 
 // Variables de Reporte TI y Permisos
@@ -1014,8 +1018,13 @@ $('cNo').onclick = function(){ $('dlgConfirm').close(); };
 $('cYes').onclick = function(){ $('dlgConfirm').close(); if(confirmCb) confirmCb(); };
 
 var promptCb = null;
-function customPrompt(msg, cb, type) {
+function customPrompt(msg, cb, type, details) {
     $('prmMsg').textContent = msg;
+    $('prmDetails').hidden = !details || !details.length;
+    $('prmDetails').replaceChildren();
+    (details||[]).forEach(function(detail){
+        var item=document.createElement('li');item.textContent=detail;$('prmDetails').appendChild(item);
+    });
     $('prmInput').type = type || 'text';
     $('prmInput').value = '';
     promptCb = cb;
@@ -1035,10 +1044,14 @@ function calDayOf(i){var d=new Date(calWeekStart);d.setDate(d.getDate()+i);retur
 function esc(s){var e=document.createElement('div');e.textContent=s==null?'':s;return e.innerHTML}
 
 function fillSelects(){
-  var s=$('sede');s.innerHTML=Object.keys(sedes).map(function(k){return '<option>'+esc(k)+'</option>'}).join('');
-  if(!sedes[sede])sede=Object.keys(sedes)[0];s.value=sede;
-  var a=sedes[sede]||[];if(a.indexOf(aula)<0)aula=a[0];
+  var previous=[sede,aula,manualSubValue()], names=Object.keys(sedes);
+  var s=$('sede');s.innerHTML=names.map(function(k){return '<option>'+esc(k)+'</option>'}).join('');
+  if(!names.includes(sede))sede=names[0]||'';s.value=sede;
+  var a=sedes[sede]||[];if(a.indexOf(aula)<0)aula=a[0]||'';
   $('aula').innerHTML=a.map(function(k){return '<option>'+esc(k)+'</option>'}).join('');$('aula').value=aula;syncManualSubSelect();fillFilters();
+  if(previous[0]!==sede||previous[1]!==aula||previous[2]!==manualSubValue())clearManualSelection();
+  fillUserSedes('uSede',$('uSede').value);
+  if($('dlgEditMods').open)fillUserSedes('emSede',$('emSede').value);
   
   var cS=$('cCalSede'), prevS = cS.value;
   cS.innerHTML=Object.keys(sedes).map(function(k){return '<option>'+esc(k)+'</option>'}).join('');
@@ -1054,19 +1067,33 @@ function fillSelects(){
   renderCal();
 }
 function cur(){return bookings.filter(function(b){return b.sede===sede&&(b.aulaBase||b.aula)===aula&&b.estado!=='rechazada'})}
-function slotBooking(list,date,m){for(var i=0;i<list.length;i++){var b=list[i];if(b.fecha===date&&m>=b.inicio&&m<b.fin)return b}return null}
+function nextBookingCode(prefix){
+  var year='-'+new Date().getFullYear(), last=0;
+  allData.bookings.forEach(function(b){
+    var code=b.grupo||'';
+    if(code.startsWith(prefix)&&code.endsWith(year)){
+      var number=Number(code.slice(prefix.length,-year.length));
+      if(Number.isSafeInteger(number))last=Math.max(last,number);
+    }
+  });
+  return prefix+String(last+1).padStart(4,'0')+year;
+}
 function manualSubValue(){var el=$('manualSub');return el&&!$('manualSubWrap').hidden&&$('manualSubWrap').style.display!=='none'?el.value:''}
 function manualSubOf(b){return extractBookingSub(b,b.aulaBase||b.aula)||''}
-function manualSlotBooking(list,date,m){
+function manualConflict(list,date,start,end){
   var selected=manualSubValue();
-  for(var i=0;i<list.length;i++){
-    var b=list[i];
-    if(b.fecha!==date||m<b.inicio||m>=b.fin)continue;
+  return list.find(function(b){
+    if(b.fecha!==date||start>=b.fin||end<=b.inicio)return false;
     var bookedSub=manualSubOf(b);
-    // Una reserva de ambiente completo bloquea todos los sub-espacios.
-    if(!selected||!bookedSub||bookedSub===selected)return b;
-  }
-  return null;
+    return !selected||!bookedSub||bookedSub===selected;
+  });
+}
+function manualUnavailable(date,start,end,now){
+  var weekday=new Date(date+'T00:00:00').getDay();
+  var hours=(R.hd&&R.hd[weekday])||RDEF.hd[weekday];
+  var today=iso(now), minutes=now.getHours()*60+now.getMinutes();
+  return !sede||!aula||date<today||(date===today&&start+R.paso<=minutes)||
+    !hours.a||start<hours.i*60||end>hours.f*60;
 }
 function syncManualSubSelect(){
   var wrap=$('manualSubWrap'),sel=$('manualSub');
@@ -1085,27 +1112,26 @@ function syncManualSubSelect(){
   wrap.style.display='block';
 }
 
-function render(){
-  var now=new Date(),todayIso=iso(now),nowM=now.getHours()*60+now.getMinutes(), e=dayOf(6);
+function renderManualGrid(){
+  var now=new Date(),todayIso=iso(now),e=dayOf(6);
   $('wk').textContent='Semana del '+dayOf(0).getDate()+'/'+(dayOf(0).getMonth()+1)+' al '+e.getDate()+'/'+(e.getMonth()+1);
-  var list=cur(),h='<div class="h">HORA</div>';
+  var list=cur(),h='<div class="h">HORA</div>',dates=DAYS.map(function(_,d){return iso(dayOf(d))});
   for(var d=0;d<7;d++){var dd=dayOf(d);h+='<div class="h'+(iso(dd)===todayIso?' today':'')+'">'+DAYS[d]+'<small>'+dd.getDate()+'/'+String(dd.getMonth()+1).padStart(2,'0')+'</small></div>'}
-  for(var s=0;s<SLOTS;s++){
-    var m=START+s*30,hr=(m%60===0);h+='<div class="t">'+(hr?hm(m):'')+'</div>';
+  for(var s=0;s<pSlots();s++){
+    var m=pStart()+s*R.paso,hr=(m%60===0);h+='<div class="t">'+(hr?hm(m):'')+'</div>';
     for(var d2=0;d2<7;d2++){
-      var date=iso(dayOf(d2)),b=manualSlotBooking(list,date,m),cls='c'+(hr?' hr':''),txt='';
-      var dw=dayOf(d2).getDay();
-      var hdConf = (R.hd && R.hd[dw]) ? R.hd[dw] : {a: dw!==0?1:0, i: R.hIni, f: dw===6?12:R.hFin};
-      var noAtiende = !hdConf.a || (m < hdConf.i * 60 || m >= hdConf.f * 60);
-      var past=date<todayIso||(date===todayIso&&m+30<=nowM)||noAtiende;
+      var date=dates[d2],b=manualConflict(list,date,m,m+R.paso),cls='c'+(hr?' hr':''),txt='';
       if(b){cls+=b.estado==='aprobada'?' apr':b.estado==='info'?' inf':' pen';if(m===b.inicio)txt=(b.estado==='aprobada'?'⊗ ':b.estado==='info'?'❓ ':'⏳ ')+esc(b.nombre||'')}
-      else if(past)cls+=' past';else if(sel&&sel.d===d2&&s>=Math.min(sel.a,sel.b)&&s<=Math.max(sel.a,sel.b))cls+=' sel';
-      h+='<div class="'+cls+'" data-d="'+d2+'" data-s="'+s+'">'+txt+'</div>';
+      else if(manualUnavailable(date,m,m+R.paso,now))cls+=' past';
+      h+='<div class="'+cls+'" data-date="'+date+'" data-minutes="'+m+'">'+txt+'</div>';
     }
   }
   $('grid').innerHTML=h;
-  if(sel){var a=Math.min(sel.a,sel.b),z=Math.max(sel.a,sel.b)+1;$('selinfo').textContent=DAYS[sel.d]+' '+dayOf(sel.d).getDate()+'/'+(dayOf(sel.d).getMonth()+1)+' · '+hm(pStart()+a*R.paso)+' → '+hm(pStart()+z*R.paso)+' · '+(((z-a)*R.paso)/60)+' h';$('res').disabled=false}
-  else{$('selinfo').textContent='Marca y arrastra sobre un día para elegir el horario';$('res').disabled=true}
+  paintManualSelection();
+}
+
+function render(){
+  renderManualGrid();
   renderList();renderPanel();renderCal(); renderNotifs();
 }
 
@@ -1117,47 +1143,128 @@ function renderList(){
     return '<div class="item"><span class="tag '+tcls(b.estado)+'">'+elab(b.estado)+'</span> <b>'+b.fecha+'</b> '+hm(b.inicio)+'–'+hm(b.fin)+'<br>'+((manualSubOf(b))?'<b>🖥️ '+esc(manualSubOf(b))+'</b><br>':'')+esc(b.nombre)+' · '+esc(b.motivo)+act+'</div>'}).join(''):'<p class="mut">Sin reservas esta semana en este ambiente.</p>';
 }
 
-function cellAt(x,y){var el=document.elementFromPoint(x,y);return el&&el.classList&&el.classList.contains('c')?el:null}
-function canPick(el){return el&&!/past|pen|apr|inf/.test(el.className)}
+function canPick(el){return el&&!el.matches('.past,.pen,.apr,.inf')}
+function manualSelection(){
+  if(!manualDrag)return manualBlocks;
+  var block={fecha:manualDrag.fecha,inicio:Math.min(manualDrag.start,manualDrag.end),fin:Math.max(manualDrag.start,manualDrag.end)+R.paso};
+  var merged=[];
+  manualBlocks.concat(block).sort(function(a,b){return a.fecha.localeCompare(b.fecha)||a.inicio-b.inicio}).forEach(function(current){
+    var last=merged[merged.length-1];
+    if(last&&last.fecha===current.fecha&&current.inicio<=last.fin)last.fin=Math.max(last.fin,current.fin);
+    else merged.push(Object.assign({},current));
+  });
+  return merged;
+}
+function selectionSummary(blocks){
+  var days=new Set(blocks.map(function(b){return b.fecha})).size;
+  var hours=blocks.reduce(function(sum,b){return sum+(b.fin-b.inicio)/60},0);
+  return days+' '+(days===1?'día':'días')+' · '+blocks.length+' '+(blocks.length===1?'bloque':'bloques')+' · '+hours.toLocaleString('es-PE')+' h';
+}
+function paintManualSelection(){
+  var blocks=manualSelection();
+  $('grid').querySelectorAll('.c').forEach(function(el){
+    var time=+el.dataset.minutes;
+    el.classList.toggle('sel',canPick(el)&&blocks.some(function(b){return b.fecha===el.dataset.date&&time>=b.inicio&&time<b.fin}));
+  });
+  $('selinfo').textContent=blocks.length?selectionSummary(blocks):'Selecciona uno o varios horarios';
+  if(manualPending&&manualPending.next)$('selinfo').textContent+=' · '+manualPending.next+' de '+manualPending.blocks.length+' guardados';
+  $('res').textContent=manualSaving?'Guardando…':manualPending?'Reintentar guardado':'⚡ Bloquear Espacio';
+  $('res').disabled=!manualBlocks.length||!!manualDrag||manualSaving;
+  $('clr').disabled=!blocks.length||manualSaving;
+  $('sede').disabled=$('aula').disabled=$('manualSub').disabled=manualSaving;
+}
+function clearManualSelection(){manualBlocks=[];manualDrag=null;manualPending=null}
 var g=$('grid');
 g.addEventListener('pointerdown',function(ev){
   var el=ev.target.closest('.c');
-  if(el&&/pen|apr|inf/.test(el.className)){
-    if(isAdmin()){var bb=manualSlotBooking(cur(),iso(dayOf(+el.dataset.d)),pStart()+(+el.dataset.s)*R.paso);if(bb)openDetail(bb.id, false)}
+  if(!el||ev.button!==0||manualDrag||manualSaving||manualPending||!hasMod('res'))return;
+  var start=+el.dataset.minutes;
+  if(!canPick(el)){
+    var b=manualConflict(cur(),el.dataset.date,start,start+R.paso);
+    if(b)openDetail(b.id,false);
     return;
   }
-  if(!canPick(el))return;
   ev.preventDefault();
-  dragging=true;
-  sel={d:+el.dataset.d,a:+el.dataset.s,b:+el.dataset.s};
+  manualDrag={id:ev.pointerId,fecha:el.dataset.date,start:start,end:start,moved:false};
   if(g.setPointerCapture)try{g.setPointerCapture(ev.pointerId)}catch(_){}
-  render();
+  paintManualSelection();
 });
 g.addEventListener('pointermove',function(ev){
-  if(!dragging||!sel)return;
-  var el=cellAt(ev.clientX,ev.clientY);
-  if(!canPick(el)||+el.dataset.d!==sel.d)return;
-  var s=+el.dataset.s,lo=Math.min(sel.a,s),hi=Math.max(sel.a,s),list=cur(),date=iso(dayOf(sel.d));
-  for(var i=lo;i<=hi;i++)if(slotBooking(list,date,pStart()+i*R.paso))return;
-  if(s!==sel.b){sel.b=s;render()}
+  if(!manualDrag||ev.pointerId!==manualDrag.id)return;
+  var point=document.elementFromPoint(ev.clientX,ev.clientY),el=point&&point.closest('#grid .c');
+  if(!canPick(el)||el.dataset.date!==manualDrag.fecha)return;
+  var end=+el.dataset.minutes, start=Math.min(manualDrag.start,end), finish=Math.max(manualDrag.start,end)+R.paso;
+  if(manualUnavailable(manualDrag.fecha,start,finish,new Date())||manualConflict(cur(),manualDrag.fecha,start,finish))return;
+  if(end!==manualDrag.end){manualDrag.end=end;manualDrag.moved=true;paintManualSelection()}
 });
-function stopManualDrag(){dragging=false}
-g.addEventListener('pointerup',stopManualDrag);
-g.addEventListener('pointercancel',stopManualDrag);
-window.addEventListener('pointerup',stopManualDrag);
-$('prev').onclick=function(){weekStart.setDate(weekStart.getDate()-7);sel=null;render()};$('next').onclick=function(){weekStart.setDate(weekStart.getDate()+7);sel=null;render()};
-$('clr').onclick=function(){sel=null;render()};$('sede').onchange=function(){sede=this.value;aula=null;sel=null;fillSelects();syncManualSubSelect();render()};$('aula').onchange=function(){aula=this.value;sel=null;syncManualSubSelect();render()};$('manualSub').onchange=function(){sel=null;render()};
-$('res').onclick = function() {
-    if(!sel) return;
-    var a = Math.min(sel.a, sel.b), z = Math.max(sel.a, sel.b) + 1;
-    var dateStr = iso(dayOf(sel.d));
-    var timeStr = hm(pStart() + a * R.paso) + ' a ' + hm(pStart() + z * R.paso);
+window.addEventListener('pointerup',function(ev){
+  if(!manualDrag||ev.pointerId!==manualDrag.id)return;
+  var date=manualDrag.fecha, start=manualDrag.start;
+  var selected=manualBlocks.find(function(b){return b.fecha===date&&start>=b.inicio&&start<b.fin});
+  manualBlocks=selected&&!manualDrag.moved?manualBlocks.filter(function(b){return b!==selected}):manualSelection();
+  manualDrag=null;paintManualSelection();
+});
+function cancelManualDrag(ev){if(manualDrag&&ev.pointerId===manualDrag.id){manualDrag=null;paintManualSelection()}}
+g.addEventListener('pointercancel',cancelManualDrag);
+g.addEventListener('lostpointercapture',cancelManualDrag);
+function changeManualWeek(offset){manualDrag=null;weekStart.setDate(weekStart.getDate()+offset);renderManualGrid();renderList()}
+$('prev').onclick=function(){changeManualWeek(-7)};$('next').onclick=function(){changeManualWeek(7)};
+$('clr').onclick=function(){clearManualSelection();paintManualSelection()};
+$('sede').onchange=function(){sede=this.value;aula='';clearManualSelection();fillSelects();render()};
+$('aula').onchange=function(){aula=this.value;clearManualSelection();syncManualSubSelect();render()};
+$('manualSub').onchange=function(){clearManualSelection();renderManualGrid()};
 
-    customPrompt('Reserva Manual (' + aula + ' · ' + dateStr + ' ' + timeStr + '). Ingresa el nombre del evento:', function(val) {
+function manualTargetIsCurrent(target){
+    return hasMod('res')&&target[0]===sede&&target[1]===aula&&target[2]===manualSubValue()&&target[3]===curUid;
+}
+function unavailableManualBlock(blocks,occupied,now){
+    return blocks.find(function(block){
+        return manualUnavailable(block.fecha,block.inicio,block.fin,now)||manualConflict(occupied,block.fecha,block.inicio,block.fin);
+    });
+}
+async function saveManualBlocks(pending){
+    manualSaving=true;paintManualSelection();
+    try{
+        // Firestore admite hasta 500 escrituras por lote. Las referencias se reutilizan al reintentar.
+        while(pending.next<pending.blocks.length){
+            if(manualPending!==pending||!manualTargetIsCurrent(pending.target))return;
+            var stop=Math.min(pending.next+500,pending.blocks.length), batch=db.batch();
+            var occupied=cur().filter(function(b){return b.grupo!==pending.record.grupo});
+            var unavailable=unavailableManualBlock(pending.blocks.slice(pending.next),occupied,new Date());
+            if(unavailable){
+                if(!pending.next)manualPending=null;
+                throw new Error('Un horario del '+unavailable.fecha+' ya no está disponible.');
+            }
+            for(var i=pending.next;i<stop;i++){
+                var block=pending.blocks[i];
+                batch.set(pending.refs[i],Object.assign({},pending.record,block));
+            }
+            await batch.commit();
+            pending.next=stop;
+            if(manualPending===pending)paintManualSelection();
+        }
+        if(manualPending===pending)clearManualSelection();
+        showToast('Horarios bloqueados · '+pending.record.grupo,'success');
+        enviarCorreoFirebase(Object.assign({},pending.record,pending.blocks[0],{bloques:pending.blocks}), 'aprobada', 'Esta es una reserva manual gestionada internamente.');
+    }catch(e){
+        var progress=pending.next?' Se guardaron '+pending.next+' de '+pending.blocks.length+' bloques.':'';
+        showToast('No se completó la reserva: '+(e.message||e)+progress,'error');
+    }finally{
+        manualSaving=false;renderManualGrid();
+    }
+}
+
+$('res').onclick = function() {
+    if(!hasMod('res')||!manualBlocks.length||manualSaving||!db)return;
+    if(manualPending){saveManualBlocks(manualPending);return}
+    var blocks=manualBlocks, target=[sede,aula,manualSubValue(),curUid];
+    var details=blocks.map(function(b){return b.fecha+' · '+hm(b.inicio)+' – '+hm(b.fin)});
+    customPrompt(aula+' · '+selectionSummary(blocks)+'. Ingresa el nombre del evento:', function(val) {
         if(!val || !val.trim()) { showToast('El nombre del evento es obligatorio.', 'error'); return; }
-        
-        var seq = String(bookings.length + 1).padStart(4, '0');
-        var code = 'R-MAN-' + seq + '-' + new Date().getFullYear();
+        if(!manualTargetIsCurrent(target)||manualSaving||blocks!==manualBlocks)return;
+        var now=new Date(), reservations=db.collection('reservas');
+        var refs=blocks.map(function(){return reservations.doc()});
+        var code='R-MAN-'+refs[0].id.toUpperCase()+'-'+now.getFullYear();
         var u = users.find(function(x){return x.id === curUid});
         var userMail = u ? u.usuario : '';
 
@@ -1165,10 +1272,7 @@ $('res').onclick = function() {
             sede: sede,
             aula: aula,
             aulaBase: aula,
-            subEspacio: manualSubValue() || null, 
-            fecha: dateStr,
-            inicio: pStart() + a * R.paso,
-            fin: pStart() + z * R.paso,
+            subEspacio: target[2] || null,
             grupo: code,
             nombres: who,
             apellidos: '(Reserva Manual)',
@@ -1185,18 +1289,13 @@ $('res').onclick = function() {
             req: [],
             motivo: 'Reserva manual gestionada por: ' + who,
             estado: 'aprobada',
-            creada: Date.now(),
-            historial: [{ estado: 'aprobada', obs: 'Reserva directa desde panel', por: who, cuando: Date.now() }]
+            creada: now.getTime(),
+            historial: [{ estado: 'aprobada', obs: 'Reserva directa desde panel', por: who, cuando: now.getTime() }]
         };
 
-        db.collection('reservas').add(o).then(function() {
-            showToast('Espacio bloqueado exitosamente', 'success');
-            sel = null;
-            syncManualSubSelect();
-            render();
-            enviarCorreoFirebase(o, 'aprobada', 'Esta es una reserva manual gestionada internamente.');
-        }).catch(err);
-    });
+        manualPending={target:target,blocks:blocks,refs:refs,record:o,next:0};
+        saveManualBlocks(manualPending);
+    }, 'text', details);
 };
 $('dc').onclick=function(){$('dlg').close()};
 
@@ -1210,25 +1309,60 @@ $('list').addEventListener('click',function(ev){var bt=ev.target.closest('button
   if(!bt.dataset.id)return;
   db.doc('reservas/'+bt.dataset.id).update({estado:bt.dataset.a==='apr'?'aprobada':'rechazada'})
 });
-function saveCfg(){if(db)db.doc('config/sedes').set({map:sedes}).catch(function(){showToast('No tienes permiso para editar sedes.','error')})}
+function saveCfg(){if(db&&isSuper())db.doc('config/sedes').set({map:sedes}).catch(err)}
 
 $('addSede').onclick=function(){ openSede(null); };
 $('addAula').onclick=function(){ openAmb(sede, null); };
 
 // Lógica de Permisos de Módulos (hasMod)
 function hasMod(mod) {
-    if(!staff) return false;
+    if(!isAdmin()||(mod==='cfg'&&siteScope)) return false;
     var u = users.find(function(x){return x.id === curUid});
-    if(u && u.modulos) return u.modulos.indexOf(mod) >= 0;
+    if(!u||!u.activo)return false;
+    if(Array.isArray(u.modulos)) return u.modulos.indexOf(mod) >= 0;
     return role === 'admin' ? true : ['hor','cal','rep'].indexOf(mod) >= 0;
 }
 function isSuper(){return hasMod('cfg');}
 
-function setView(v){view=v;var m={ini:'vInicio',portal:'vPortal',cfg:'vConfig',res:'vReserva',hor:'vHorarios',rep:'vReportes',panel:'vPanel',cal:'vCalendario',ti:'vTi'};for(var k in m)$(m[k]).hidden=k!==v;document.querySelectorAll('.nav button').forEach(function(b){b.classList.toggle('act',b.dataset.v===v); if(v==='cal') { syncCalSubSelect(); renderCal(); } if(v==='ti') { $('tiDate').value = iso(new Date()); renderTi(); }})}
+function viewAllowed(v){return v==='ini'||v==='portal'||hasMod(v==='panel'?'hor':v)}
+function setView(v){
+    if(!viewAllowed(v))return;
+    view=v;
+    var m={ini:'vInicio',portal:'vPortal',cfg:'vConfig',res:'vReserva',hor:'vHorarios',rep:'vReportes',panel:'vPanel',cal:'vCalendario',ti:'vTi'};
+    Object.keys(m).forEach(function(k){$(m[k]).hidden=k!==v});
+    document.querySelectorAll('.nav button').forEach(function(b){b.classList.toggle('act',b.dataset.v===v)});
+    if(v==='cal'){syncCalSubSelect();renderCal()}
+    if(v==='res'){syncManualSubSelect();renderManualGrid();renderList()}
+    if(v==='ti'){$('tiDate').value=iso(new Date());renderTi()}
+}
 
-function applyRole(){
+function applyDataScope(){
+    function visible(row){return !siteScope||row.sede===siteScope}
+    sedes=siteScope?(Object.hasOwn(allData.sedes,siteScope)?{[siteScope]:allData.sedes[siteScope]}:{}):allData.sedes;
+    bookings=allData.bookings.filter(visible);
+    tiReports=allData.tiReports.filter(visible);
+    tiStaff=allData.tiStaff.filter(visible);
+    tiParams.sedes=siteScope?Object.keys(sedes):allData.tiSedes;
+    amb={};allData.ambientes.filter(visible).forEach(function(item){amb[item.sede+'|'+item.nombre]=item});
+    sinfo={};allData.sedesInfo.forEach(function(item){if(!siteScope||item.nombre===siteScope)sinfo[item.nombre]=item});
+}
+
+function applyRole(reset){
     var a = staff && !preview;
-    var sp = isSuper(); 
+    var u=staff&&users.find(function(user){return user.id===curUid});
+    var nextScope=u&&u.sedeAsignada||'';
+    if(reset||siteScope!==nextScope){
+        ['dlg2','dlgPrompt','dlgConfirm','dlgEditMods','dlgS','dlgA','dlgType'].forEach(function(id){var dlg=$(id);if(dlg&&dlg.open)dlg.close()});
+        curId=null;directCodeSearch='';sede='';aula='';
+        ['hSearchCode','hQ','hSede','rSede','cCalSede','tiSede','uSede'].forEach(function(id){$(id).value=''});
+        syncUserScope('uSede','uMods');
+        $('dd').textContent='';$('notifList').textContent='';$('notifPanel').hidden=true;
+        P={step:1,tipo:'',sede:'',amb:[],blocks:[],week:monday(new Date()),f:{},code:''};
+        clearManualSelection();
+    }
+    siteScope=nextScope;
+    applyDataScope();fillSelects();
+    if(reset||P.step===1)renderPortal();
     document.body.classList.toggle('pub',!a);
     $('pBack').hidden=!(staff&&preview);
     $('pLogin').hidden=staff;
@@ -1239,6 +1373,7 @@ function applyRole(){
     $('navTi').hidden = !hasMod('ti');
     $('navRep').hidden = !hasMod('rep');
     $('navPanel').hidden = !hasMod('cfg');
+    $('iAbout').textContent=siteScope?'Reserva ambientes en la sede '+siteScope+', con disponibilidad en tiempo real.':'Reserva ambientes en cualquiera de las sedes del Centro de Experiencia, con disponibilidad en tiempo real.';
     
     $('prevBtn').hidden=!staff;
     $('prevBtn').textContent=preview?'↩ Volver a vista de personal':'👁 Ver como público';
@@ -1248,10 +1383,10 @@ function applyRole(){
         if(view!=='portal')setView('portal')
     }else if(!inited){
         inited=true;setView('ini')
-    }else if(!sp&&view==='cfg'){
+    }else if(!viewAllowed(view)){
         setView('ini')
     }
-    renderList();renderPanel();renderCfg();
+    render();renderCfg();renderTi();renderTiParams();
 }
 
 function tick(){$('clock').textContent=new Date().toLocaleString('es-PE',{weekday:'short',day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'}).toUpperCase()}
@@ -1341,7 +1476,9 @@ function fillTiSelects() {
     var w = $('tiWho'); if(w) w.innerHTML = '<option value="">Selecciona al técnico...</option>' + tiStaff.map(function(t){return '<option value="'+qa(t.nombre)+'">'+esc(t.nombre)+'</option>'}).join('');
     
     var sedesOpts = tiParams.sedes && tiParams.sedes.length ? tiParams.sedes : Object.keys(sedes);
-    var s = $('tiSede'); if(s) s.innerHTML = '<option value="">Selecciona la sede / lugar...</option>' + sedesOpts.map(function(k){return '<option>'+esc(k)+'</option>'}).join('');
+    var s = $('tiSede'), prev=s.value;
+    s.innerHTML = (siteScope?'':'<option value="">Selecciona la sede / lugar...</option>') + sedesOpts.map(function(k){return '<option>'+esc(k)+'</option>'}).join('');
+    if(sedesOpts.includes(prev))s.value=prev;
     var tsS = $('tsS'); if(tsS) tsS.innerHTML = sedesOpts.map(function(k){return '<option>'+esc(k)+'</option>'}).join('');
     
     var catOpts = tiParams.categorias && tiParams.categorias.length ? tiParams.categorias : defCats;
@@ -1382,6 +1519,7 @@ $('tiSave').onclick = function() {
     
     var fDate = $('tiDate').value, fWho = $('tiWho').value, fSede = $('tiSede').value, fCat = $('tiCat').value, fTit = $('tiTit').value.trim(), fDesc = $('tiDesc').value.trim(), fStat = $('tiStatus').value;
     if(!fDate || !fWho || !fSede || !fCat || !fTit) { showToast('Completa los campos obligatorios (*).', 'error'); return; }
+    if(siteScope&&fSede!==siteScope)return;
     
     var r = {
         fecha: fDate,
@@ -1418,14 +1556,22 @@ $('tiExp').onclick = function() {
 /* ---------------------------------- */
 
 $('login').onclick=function(){if(who) showToast(who+' · '+(staff?'Personal autorizado.':'Visitante.'),'info'); else openLogin();};
-function fillFilters(){$('dlS').innerHTML=Object.keys(sedes).map(function(k){return '<option value="'+qa(k)+'">'}).join('');['hSede','rSede'].forEach(function(id){var e=$(id),v=e.value;e.innerHTML='<option value="">Todas las sedes</option>'+Object.keys(sedes).map(function(k){return '<option>'+esc(k)+'</option>'}).join('');e.value=sedes[v]?v:''})}
+function fillFilters(){
+    var names=Object.keys(sedes);
+    $('dlS').innerHTML=names.map(function(k){return '<option value="'+qa(k)+'">'}).join('');
+    ['hSede','rSede'].forEach(function(id){
+        var select=$(id), previous=select.value;
+        select.innerHTML=(siteScope?'':'<option value="">Todas las sedes</option>')+names.map(function(k){return '<option>'+esc(k)+'</option>'}).join('');
+        select.value=siteScope||(names.includes(previous)?previous:'');
+    });
+}
 
 /* --- MÓDULO DE BÚSQUEDA DIRECTA POR CÓDIGO --- */
 var directCodeSearch = '';
 $('hBtnSearchCode').onclick = function() {
     directCodeSearch = $('hSearchCode').value.trim().toUpperCase();
     if(directCodeSearch){
-        $('hSede').value = ''; $('hEstado').value = ''; $('hDe').value = ''; $('hA').value = ''; $('hQ').value = '';
+        $('hSede').value = siteScope; $('hEstado').value = ''; $('hDe').value = ''; $('hA').value = ''; $('hQ').value = '';
         renderHor();
     }
 };
@@ -1714,7 +1860,7 @@ function renderCal(){
 }
 /* ---------------------------------- */
 
-function qa(x){return esc(x).replace(/"/g,'&quot;')}function slug(x){return x.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}function grpTxt(b){if(!b.grupo)return '';var l=bookings.filter(function(x){return x.grupo===b.grupo});return l.length<2?'':l.map(function(x){return esc(x.aula)+' · '+x.fecha+' '+hm(x.inicio)+'–'+hm(x.fin)}).join('<br>')}
+function qa(x){return esc(x).replace(/"/g,'&quot;')}function slug(x){return x.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}function grpTxt(b){if(!b.grupo)return '';var l=bookings.filter(function(x){return x.grupo===b.grupo&&x.sede===b.sede});return l.length<2?'':l.map(function(x){return esc(x.aula)+' · '+x.fecha+' '+hm(x.inicio)+'–'+hm(x.fin)}).join('<br>')}
 function shrink(file,cb,mw){var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var w=Math.min(mw||520,im.width),c=document.createElement('canvas');c.width=w;c.height=im.height*w/im.width;c.getContext('2d').drawImage(im,0,0,c.width,c.height);cb(c.toDataURL('image/jpeg',.7))};im.src=r.result};r.readAsDataURL(file)}
 $('aSave').onclick=function(){if(!db||!isAdmin())return;var sd=$('aS').value.trim(),n=$('aN').value.trim();if(!sd||!n){showToast('Indica sede y ambiente.','error');return}if(!sedes[sd])sedes[sd]=[];if(sedes[sd].indexOf(n)<0)sedes[sd].push(n);saveCfg();var key=sd+'|'+n,file=$('aF').files[0];var put=function(foto){var o=Object.assign({},amb[key]||{},{sede:sd,nombre:n,aforo:+$('aA').value||0,puestos:+$('aP').value||0,encargado:$('aE').value.trim()});if(foto)o.foto=foto;db.doc('ambientes/'+slug(sd)+'--'+slug(n)).set(o).then(function(){$('aF').value='';fillSelects();render();showToast('Ambiente guardado exitosamente.','success')}).catch(function(e){showToast('No se pudo guardar: '+(e&&e.message||e),'error')})};if(file)shrink(file,put);else put(null)};
 $('vPanel').addEventListener('click',function(ev){var bt=ev.target.closest('[data-ed]');if(!bt)return;var k=bt.dataset.ed.split('|'),i=amb[bt.dataset.ed]||{};$('aS').value=k[0];$('aN').value=k[1];$('aA').value=i.aforo||'';$('aP').value=i.puestos||'';$('aE').value=i.encargado||''});
@@ -1981,6 +2127,7 @@ $('pBody').addEventListener('click',function(ev){
 });
 
 function sendReq(){var f=P.f;if(!db){showToast('No se pudo conectar con el sistema.', 'error');return}
+  if(!Object.hasOwn(sedes,P.sede)||!P.blocks.length||!P.amb.length||P.amb.some(function(k){return k.split('|')[0]!==P.sede}))return;
   var need=['nombres','apellidos','dni','cargo','area','tel','tipoEv','titulo','asist','prop'];
   for(var i=0;i<need.length;i++)if(!String(f[need[i]]||'').trim()){showToast('Completa los campos obligatorios (*).', 'error');return}
   if(String(f.tel).replace(/\D/g,'').length<6){showToast('Ingresa un teléfono válido.', 'error');return}
@@ -1991,11 +2138,9 @@ function sendReq(){var f=P.f;if(!db){showToast('No se pudo conectar con el siste
   if(!f.ok){showToast('Debes aceptar el compromiso de uso del ambiente.', 'error');return}
   for(var j=0;j<P.blocks.length;j++){var bb=P.blocks[j];if(pBusy(bb.date,pStart()+bb.a*R.paso,(bb.z-bb.a)*R.paso)||pTooSoon(bb.date,pStart()+bb.a*R.paso)){showToast('Uno de los horarios ya no está disponible. Revisa la disponibilidad.', 'error');goStep(2);return}}
   
-  var seq = String(bookings.length + 1).padStart(4, '0');
-  var yr = new Date().getFullYear();
   var locInfo = sinfo[P.sede] || {};
   var loc = locInfo.codigo ? locInfo.codigo : P.sede.toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 3);
-  var code = 'R-CEC-' + loc + '-' + seq + '-' + yr;
+  var code = nextBookingCode('R-CEC-' + loc + '-');
 
   var ops=[],req=String(f.req||'').split(',').map(function(x){return x.trim()}).filter(Boolean);
   var sortedBlocks = P.blocks.slice().sort(function(a,b){return a.date<b.date?-1:1});
@@ -2280,12 +2425,20 @@ function pbk(pw,salt){if(!window.crypto||!crypto.subtle)return Promise.reject({m
   return crypto.subtle.importKey('raw',en.encode(pw),'PBKDF2',false,['deriveBits']).then(function(k){return crypto.subtle.deriveBits({name:'PBKDF2',salt:en.encode(salt),iterations:100000,hash:'SHA-256'},k,256)}).then(hex)}
 
 function setLogin(u){role=u.rol;who=u.nombre;staff=true;curUid=u.id;preview=false;inited=false;
-  try{sessionStorage.setItem('cx_s',u.id+':'+u.hash)}catch(e){}applyRole()}
-function logout(){role='';who='';staff=false;curUid=null;preview=false;inited=false;try{sessionStorage.removeItem('cx_s')}catch(e){}applyRole()}
-function restoreSess(){if(staff){var c=users.filter(function(x){return x.id===curUid})[0];if(!c||!c.activo)logout();else if(c.rol!==role){role=c.rol;applyRole()}return}
-  var s='';try{s=sessionStorage.getItem('cx_s')||''}catch(e){}var q=s.split(':'),u=users.filter(function(x){return x.id===q[0]})[0];if(u&&u.activo&&u.hash===q[1])setLogin(u)}
+  try{sessionStorage.setItem('cx_s',u.id+':'+u.hash)}catch(e){}applyRole(true)}
+function logout(){role='';who='';staff=false;curUid=null;preview=false;inited=false;try{sessionStorage.removeItem('cx_s')}catch(e){}applyRole(true)}
+function restoreSess(){
+  if(staff){
+    var current=users.find(function(x){return x.id===curUid});
+    if(!current||!current.activo)logout();else{role=current.rol;who=current.nombre;applyRole()}
+    return;
+  }
+  var saved='';try{saved=sessionStorage.getItem('cx_s')||''}catch(e){}
+  var parts=saved.split(':'), user=users.find(function(x){return x.id===parts[0]});
+  if(user&&user.activo&&user.hash===parts[1])setLogin(user);
+}
 function openLogin(){$('lForm').hidden=staff;$('lAcc').hidden=!staff;
-  if(staff)$('lInfo').innerHTML='<b>'+esc(who)+'</b><br>'+(isSuper()?'Administrador completo':'Personal');
+  if(staff)$('lInfo').innerHTML='<b>'+esc(who)+'</b><br>'+(isSuper()?'Administrador completo':'Personal')+(siteScope?' · '+esc(siteScope):'');
   else{$('lMsg').textContent=users.length?'':'Aún no hay usuarios creados. Contacta a TI.'}
   $('dlgL').showModal()}
 
@@ -2310,7 +2463,7 @@ function renderTiParams() {
 }
 
 function saveTiParams() {
-    if(db) db.doc('config/ti_params').set(tiParams).then(function(){ showToast('Parámetros actualizados', 'success'); }).catch(err);
+    if(db&&isSuper()) db.doc('config/ti_params').set(tiParams).then(function(){ showToast('Parámetros actualizados', 'success'); }).catch(err);
 }
 
 $('tsAddCat').onclick = function() {
@@ -2364,17 +2517,37 @@ function renderTiStaff() {
 
 $('uG').onclick=function(){$('uP').value=Math.random().toString(36).slice(2,6)+Math.random().toString(36).slice(2,6).toUpperCase()};
 
+function fillUserSedes(id,value){
+    var el=$(id), names=Object.keys(sedes);
+    if(value&&!names.includes(value)&&isSuper())names.push(value);
+    el.innerHTML='<option value="">Todas las sedes</option>'+names.map(function(name){return '<option>'+esc(name)+'</option>'}).join('');
+    el.value=names.includes(value)?value:'';
+}
+function syncUserScope(selectId, modsId){
+    var limited=!!$(selectId).value, config=$(modsId).querySelector('input[value=cfg]');
+    config.disabled=limited;
+    if(limited)config.checked=false;
+    if(selectId==='uSede'){
+        $('uR').disabled=limited;
+        if(limited)$('uR').value='personal';
+    }
+}
+$('uSede').onchange=function(){syncUserScope('uSede','uMods')};
+$('emSede').onchange=function(){syncUserScope('emSede','emChk')};
+
 $('uC').onclick=function(){if(!isSuper()||!db){showToast('Solo un administrador completo puede crear o modificar usuarios.', 'error');return}
   var nom=$('uN').value.trim(),us=$('uU').value.trim(),pw=$('uP').value,id=slug(us);
   if(!nom||!id||pw.length<6){showToast('Completa nombre, usuario y una contraseña de al menos 6 caracteres.', 'error');return}
   if(users.some(function(x){return x.id===id})){showToast('Ese usuario ya existe.', 'error');return}
   
-  var mods = [].slice.call(document.querySelectorAll('#uMods input:checked')).map(function(x){return x.value});
+  var scope=$('uSede').value, userRole=scope?'personal':$('uR').value;
+  if(scope&&!Object.hasOwn(allData.sedes,scope)){showToast('Selecciona una sede registrada.','error');return}
+  var mods = Array.from($('uMods').querySelectorAll('input:checked'),function(x){return x.value}).filter(function(mod){return !scope||mod!=='cfg'});
   var salt=rnd();
   pbk(pw,salt).then(function(h){return db.doc('usuarios/'+id).set({
-      usuario:us, nombre:nom, rol:$('uR').value, modulos:mods, salt:salt, hash:h, activo:true, creado:Date.now()
+      usuario:us, nombre:nom, rol:userRole, modulos:mods, sedeAsignada:scope, salt:salt, hash:h, activo:true, creado:Date.now()
   })})
-   .then(function(){showToast('Usuario creado correctamente.', 'success');$('uN').value=$('uU').value=$('uP').value=''}).catch(err)};
+   .then(function(){showToast('Usuario creado correctamente.', 'success');$('uN').value=$('uU').value=$('uP').value=$('uSede').value='';syncUserScope('uSede','uMods')}).catch(err)};
 
 var emUid = null;
 $('uList').addEventListener('click',function(ev){var bt=ev.target.closest('[data-ua]');if(!bt||!isSuper()||!db)return;var u=users.filter(function(x){return x.id===bt.dataset.id})[0];if(!u)return;var ref=db.doc('usuarios/'+u.id),a=bt.dataset.ua;
@@ -2387,10 +2560,11 @@ $('uList').addEventListener('click',function(ev){var bt=ev.target.closest('[data
   else if(a==='mod'){
       emUid = u.id;
       $('emUser').textContent = u.nombre + ' (' + u.usuario + ')';
-      var um = u.modulos || (u.rol==='admin'?['hor','cal','ti','rep','cfg']:['hor','cal','rep']);
+      var um = u.modulos || (u.rol==='admin'?['hor','res','cal','ti','rep','cfg']:['hor','cal','rep']);
       document.querySelectorAll('#emChk input').forEach(function(chk){
           chk.checked = um.indexOf(chk.value) >= 0;
       });
+      fillUserSedes('emSede',u.sedeAsignada);syncUserScope('emSede','emChk');
       $('dlgEditMods').showModal();
   }
   else if(a==='act')ref.update({activo:!u.activo}).catch(err);
@@ -2398,10 +2572,12 @@ $('uList').addEventListener('click',function(ev){var bt=ev.target.closest('[data
 
 $('emC').onclick = function() { $('dlgEditMods').close(); };
 $('emS').onclick = function() {
-    if(!emUid || !db) return;
-    var mods = [].slice.call(document.querySelectorAll('#emChk input:checked')).map(function(x){return x.value});
+    if(!emUid||!db||!isSuper())return;
+    var scope=$('emSede').value;
+    if(scope&&!Object.hasOwn(allData.sedes,scope)){showToast('Selecciona una sede registrada.','error');return}
+    var mods=Array.from($('emChk').querySelectorAll('input:checked'),function(x){return x.value}).filter(function(mod){return !scope||mod!=='cfg'});
     var nRol = mods.indexOf('cfg') >= 0 ? 'admin' : 'personal';
-    db.doc('usuarios/'+emUid).update({ modulos: mods, rol: nRol })
+    db.doc('usuarios/'+emUid).update({modulos:mods,rol:nRol,sedeAsignada:scope})
     .then(function(){
         showToast('Permisos actualizados.', 'success');
         $('dlgEditMods').close();
@@ -2409,10 +2585,11 @@ $('emS').onclick = function() {
     }).catch(err);
 };
 
-function renderUsers(){$('uNote').textContent=isSuper()?'':'Solo un administrador completo puede crear o modificar usuarios; aquí puedes verlos.';
+function renderUsers(){
+  if(!isSuper()){$('uList').textContent='';return}
   var b=function(a,id,t){return '<button class="sec" data-ua="'+a+'" data-id="'+qa(id)+'" style="padding:4px 10px">'+t+'</button> '};
-  $('uList').innerHTML=users.length?'<table><tr><th>Nombre</th><th>Usuario</th><th>Rol(Legacy)</th><th>Estado</th><th></th></tr>'+users.slice().sort(function(x,y){return (x.nombre||'')<(y.nombre||'')?-1:1}).map(function(u){
-    return '<tr><td><b>'+esc(u.nombre)+'</b></td><td>'+esc(u.usuario)+'</td><td>'+(u.rol==='admin'?'Admin':'Personal')+'</td><td><span class="tag '+(u.activo?'apr':'rej')+'">'+(u.activo?'activo':'inactivo')+'</span></td><td style="white-space:nowrap">'+(isSuper()?b('pw',u.id,'🔑 Clave')+b('mod',u.id,'⚙️ Permisos')+b('act',u.id,u.activo?'⏸ Desactivar':'▶ Activar')+b('del',u.id,'🗑'):'')+'</td></tr>'}).join('')+'</table>':'<p class="mut">Aún no hay usuarios.</p>'}
+  $('uList').innerHTML=users.length?'<table><tr><th>Nombre</th><th>Usuario</th><th>Rol</th><th>Sede visible</th><th>Estado</th><th></th></tr>'+users.slice().sort(function(x,y){return (x.nombre||'')<(y.nombre||'')?-1:1}).map(function(u){
+    return '<tr><td><b>'+esc(u.nombre)+'</b></td><td>'+esc(u.usuario)+'</td><td>'+(!u.sedeAsignada&&u.rol==='admin'?'Admin':'Personal')+'</td><td>'+esc(u.sedeAsignada||'Todas las sedes')+'</td><td><span class="tag '+(u.activo?'apr':'rej')+'">'+(u.activo?'activo':'inactivo')+'</span></td><td style="white-space:nowrap">'+b('pw',u.id,'🔑 Clave')+b('mod',u.id,'⚙️ Permisos')+b('act',u.id,u.activo?'⏸ Desactivar':'▶ Activar')+b('del',u.id,'🗑')+'</td></tr>'}).join('')+'</table>':'<p class="mut">Aún no hay usuarios.</p>'}
 
 function openSede(n){eSede=n;fotoS=null;var i=(n&&sinfo[n])||{};$('sTit').textContent=n?'Editar sede':'Nueva sede';$('sN').value=n||'';$('sN').disabled=!!n;$('sCod').value=i.codigo||'';$('sD').value=i.dir||'';$('sF').value='';$('sPrev').hidden=!i.foto;if(i.foto)$('sPrev').src=i.foto;$('dlgS').showModal()}
 $('sF').onchange=function(){var f=this.files[0];if(f)shrink(f,function(d){fotoS=d;$('sPrev').src=d;$('sPrev').hidden=false},900)};
@@ -2548,7 +2725,7 @@ function resolve(r){
       if(nFin <= nIni) { showToast('El horario modificado es inválido (fin debe ser mayor que inicio).', 'error'); return; }
   }
 
-  var tg=b.grupo?bookings.filter(function(x){return x.grupo===b.grupo}):[b];
+  var tg=b.grupo?bookings.filter(function(x){return x.grupo===b.grupo&&x.sede===b.sede}):[b];
   
   Promise.all(tg.map(function(t){
       var h=(t.historial||[]).concat([{estado:r,obs:o,por:who||'Personal',cuando:Date.now()}]);
@@ -2613,8 +2790,8 @@ function generarPlantillaCorreo(reserva, estado, obs) {
     }
 
     var fechasHtml = '';
-    if (estado === 'pendiente' && reserva.bloques && reserva.bloques.length > 1) {
-        fechasHtml = '<b>Fechas y Horarios Reservados (' + reserva.bloques.length + ' días):</b><br>' +
+    if (reserva.bloques && reserva.bloques.length > 1) {
+        fechasHtml = '<b>Fechas y Horarios Reservados (' + reserva.bloques.length + ' bloques):</b><br>' +
             reserva.bloques.map(function(bl, i) {
                 return '&nbsp;&nbsp;• <b>Día ' + (i + 1) + ':</b> ' + bl.fecha + ' (' + hm(bl.inicio) + ' a ' + hm(bl.fin) + ')';
             }).join('<br>') + '<br>';
@@ -2792,16 +2969,17 @@ try {
     $('status').textContent = 'Conectado a Firebase · Reservas en vivo.';
 
     db.collection('reservas').onSnapshot(function(snap){
-        bookings = snap.docs.map(function(x){
-            var v = typeof x.data === 'function' ? x.data() : x.data;
-            return Object.assign({id: x.id}, v);
-        });
+        allData.bookings=snap.docs.map(function(x){return Object.assign({},dat(x),{id:x.id})});
+        applyDataScope();
+        var previous=manualSubValue();syncManualSubSelect();
+        if(previous!==manualSubValue())clearManualSelection();
         syncCalSubSelect();
-        render(); 
+        render();
     }, function(){ $('status').textContent = 'Se perdió la conexión en vivo.'; });
 
     db.collection('reportes_ti').onSnapshot(function(snap){
-        tiReports = snap.docs.map(function(x){ return Object.assign({id: x.id}, dat(x)); });
+        allData.tiReports=snap.docs.map(function(x){return Object.assign({},dat(x),{id:x.id})});
+        applyDataScope();
         if(view === 'ti') renderTi();
     });
 
@@ -2809,49 +2987,44 @@ try {
         var v = s && typeof s.data === 'function' ? s.data() : s.data;
         if(v) {
             tiParams.categorias = v.categorias || [];
-            tiParams.sedes = v.sedes || [];
+            allData.tiSedes = v.sedes || [];
         } else {
             tiParams.categorias = defCats;
-            tiParams.sedes = Object.keys(sedes);
+            allData.tiSedes = [];
         }
+        applyDataScope();
         renderTiParams();
         fillTiSelects();
     });
 
     db.collection('personal_ti').onSnapshot(function(snap){
-        tiStaff = snap.docs.map(function(x){ return Object.assign({id: x.id}, dat(x)); });
+        allData.tiStaff=snap.docs.map(function(x){return Object.assign({},dat(x),{id:x.id})});
+        applyDataScope();
         renderTiStaff();
         fillTiSelects();
     });
 
     db.doc('config/sedes').onSnapshot(function(s){
         var v = s && (typeof s.data === 'function' ? s.data() : s.data);
-        if(v && v.map){ sedes = v.map; fillSelects(); render(); if(P.step===2) renderPortal(); renderCfg(); }
+        if(v&&v.map){allData.sedes=v.map;applyDataScope();fillSelects();render();if(P.step===2)renderPortal();renderCfg()}
     });
 
     db.collection('ambientes').onSnapshot(function(snap){
-        amb = {};
-        snap.docs.forEach(function(x){
-            var v = typeof x.data === 'function' ? x.data() : x.data;
-            if(v && v.sede) amb[v.sede+'|'+v.nombre] = v;
-        });
-        syncCalSubSelect();
-        if(P.step===2) renderPortal(); renderPanel(); renderCfg(); renderCal();
+        allData.ambientes=snap.docs.map(dat).filter(function(v){return v&&v.sede});
+        applyDataScope();fillSelects();
+        if(P.step===2)renderPortal();render();renderCfg();
     });
 
     db.doc('config/reglas').onSnapshot(function(sn){
         var v = sn && dat(sn), o = R;
         R = Object.assign({}, RDEF, v||{});
-        if(o.paso !== R.paso || o.hIni !== R.hIni) P.blocks = [];
-        fillReg(); if(P.step===2) renderPortal(); renderCal();
+        if(o.paso!==R.paso||o.hIni!==R.hIni){P.blocks=[];clearManualSelection()}
+        fillReg();if(P.step===2)renderPortal();render();
     });
 
     db.collection('sedesinfo').onSnapshot(function(snap){
-        sinfo = {};
-        snap.docs.forEach(function(x){
-            var v = dat(x);
-            if(v && v.nombre) sinfo[v.nombre] = v;
-        });
+        allData.sedesInfo=snap.docs.map(dat).filter(function(v){return v&&v.nombre});
+        applyDataScope();
         if(P.step===2) renderPortal(); renderCfg();
     });
 
