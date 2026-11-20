@@ -954,7 +954,7 @@ dialog::backdrop { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(4px
     <div id="dEditTimeBox"></div>
     <label style="margin-top:12px; display:block;">Observaciones / comentarios</label>
     <textarea id="dobs" rows="3" placeholder="Obligatorio al rechazar o pedir mayor información"></textarea>
-    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="ok" data-r="aprobada">✔ Aprobar</button><button class="wa" data-r="info">⚠ Se requiere mayor información</button><button class="no" data-r="rechazada">✖ Rechazar</button></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="ok" data-r="aprobada">✔ Aprobar bloque</button><button class="wa" data-r="info">⚠ Pedir información</button><button class="no" data-r="rechazada">✖ Rechazar bloque</button></div>
     <p><a id="dmail" target="_blank" rel="noopener" style="color:var(--pri); font-weight:600;">✉ Escribir al solicitante</a></p>
   </div>
   <div style="text-align:right"><button class="sec" id="d2c">Cerrar</button></div>
@@ -1301,9 +1301,7 @@ $('dc').onclick=function(){$('dlg').close()};
 
 $('list').addEventListener('click',function(ev){var bt=ev.target.closest('button');if(!bt||!db||!isAdmin())return;
   if(bt.dataset.delres){
-    customConfirm('¿Eliminar esta reserva permanentemente?', 'danger', function(){
-      db.doc('reservas/'+bt.dataset.delres).delete().then(function(){showToast('Reserva eliminada','success')}).catch(err);
-    });
+    confirmDeleteBlock(bt.dataset.delres);
     return;
   }
   if(!bt.dataset.id)return;
@@ -1395,9 +1393,7 @@ function item(b,acts){return '<div class="item"><span class="tag '+tcls(b.estado
 function renderPanel(){renderInicio();renderHor();renderRep();renderPGrid();var t=iso(new Date());var pe=bookings.filter(function(b){return b.estado==='pendiente'||b.estado==='info'}).sort(function(x,y){return x.creada-y.creada});var ap=bookings.filter(function(b){return b.estado==='aprobada'&&b.fecha>=t}).sort(function(x,y){return x.fecha+x.inicio<y.fecha+y.inicio?-1:1});$('bn').textContent=isAdmin()&&pe.length?pe.length:'';$('pPend').innerHTML=pe.length?pe.map(function(b){return item(b,true)}).join(''):'<p class="mut">No hay solicitudes pendientes.</p>';$('pApr').innerHTML=ap.length?ap.map(function(b){return item(b,true)}).join(''):'<p class="mut">Sin reservas aprobadas próximas.</p>';$('pSedes').innerHTML=Object.keys(sedes).map(function(k){return '<div class="item"><b>'+esc(k)+'</b> <button class="no" data-rs="'+esc(k)+'" style="padding:2px 8px">Quitar sede</button>'+sedes[k].map(function(a){return '<div>• '+esc(a)+' <button class="sec" data-rs="'+esc(k)+'" data-ra="'+esc(a)+'" style="padding:1px 6px">Quitar</button> <button class="sec" data-ed="'+qa(k+'|'+a)+'" style="padding:1px 6px">Editar</button></div>'}).join('')+'</div>'}).join('')}
 $('vPanel').addEventListener('click',function(ev){var bt=ev.target.closest('button');if(!bt||!db||!isAdmin())return;
 if(bt.dataset.delres){
-    customConfirm('¿Eliminar esta reserva permanentemente?', 'danger', function(){
-        db.doc('reservas/'+bt.dataset.delres).delete().then(function(){showToast('Reserva eliminada','success')}).catch(err);
-    });
+    confirmDeleteBlock(bt.dataset.delres);
     return;
 }
 if(bt.dataset.id){db.doc('reservas/'+bt.dataset.id).update({estado:bt.dataset.a==='apr'?'aprobada':'rechazada'});return}
@@ -1439,7 +1435,8 @@ function renderNotifs() {
         evts.push({ id: b.id, cod: b.grupo, t: b.creada, st: 'pendiente', desc: 'La reserva '+esc(b.aula)+' del '+b.fecha+' fue registrada. Solicitante: '+esc(b.nombre) });
         if(b.historial) {
             b.historial.forEach(function(h) {
-                evts.push({ id: b.id, cod: b.grupo, t: h.cuando, st: h.estado, desc: 'La reserva '+esc(b.aula)+' del '+b.fecha+' fue '+(h.estado==='aprobada'?'aprobada':h.estado==='rechazada'?'rechazada':'marcada como "Requiere Info"')+' por '+esc(h.por)+'. '+(h.obs?esc(h.obs):'') });
+                var change=h.accion==='horario'?'reprogramada':h.estado==='aprobada'?'aprobada':h.estado==='rechazada'?'rechazada':'marcada como "Requiere Info"';
+                evts.push({ id: b.id, cod: b.grupo, t: h.cuando, st: h.accion==='horario'?'horario':h.estado, desc: 'La reserva '+esc(b.aula)+' del '+b.fecha+' fue '+change+' por '+esc(h.por)+'. '+(h.obs?esc(h.obs):'') });
             });
         }
     });
@@ -1450,7 +1447,7 @@ function renderNotifs() {
     
     list.innerHTML = evts.map(function(e) {
         var c = e.st==='aprobada'?'apr':e.st==='rechazada'?'rej':e.st==='info'?'inf':'pen';
-        var tit = e.st==='aprobada'?'Reserva aprobada':e.st==='rechazada'?'Reserva rechazada':e.st==='info'?'Requiere información':'Reserva pendiente';
+        var tit = e.st==='horario'?'Horario actualizado':e.st==='aprobada'?'Reserva aprobada':e.st==='rechazada'?'Reserva rechazada':e.st==='info'?'Requiere información':'Reserva pendiente';
         var tc = e.st==='aprobada'?'var(--okb)':e.st==='rechazada'?'#ef4444':e.st==='info'?'#ea580c':'var(--penb)';
         return '<div class="n-item" data-nid="'+e.id+'" data-ncod="'+e.cod+'">'
              + '<div class="n-item-title"><i class="n-dot '+c+'"></i> <span style="color:'+tc+';">'+tit+'</span></div>'
@@ -1639,9 +1636,7 @@ $('rExp').onclick=function(){dl('reporte-centro-experiencia.xlsx',rFilt())};
 
 $('vHorarios').addEventListener('click',function(ev){var bt=ev.target.closest('button');if(!bt||!db||!isAdmin())return;
   if(bt.dataset.delres){
-    customConfirm('¿Eliminar esta reserva permanentemente?', 'danger', function(){
-      db.doc('reservas/'+bt.dataset.delres).delete().then(function(){showToast('Reserva eliminada','success')}).catch(err);
-    });
+    confirmDeleteBlock(bt.dataset.delres);
     return;
   }
   if(!bt.dataset.id)return;
@@ -2067,18 +2062,20 @@ $('pBody').addEventListener('click',function(ev){
     var l=bookings.filter(function(b){return b.grupo===c&&(b.correo||'').toLowerCase()===mm}).sort(function(a,b){return a.fecha+a.inicio<b.fecha+b.inicio?-1:1});
     
     if(l.length) {
-        var res = l[0]; 
+        var res = l[0];
+        var mixed=l.some(function(b){return b.estado!==res.estado});
         var dateReg = res.creada ? new Date(res.creada).toLocaleDateString('es-PE') : '';
         var dateRes = '';
         var revBy = '';
-        if (res.historial && res.historial.length > 0) {
-            var lastH = res.historial[res.historial.length-1];
+        var lastH=(res.historial||[]).slice().reverse().find(function(entry){return entry.accion!=='horario'});
+        if(lastH){
             dateRes = new Date(lastH.cuando).toLocaleDateString('es-PE');
             revBy = lastH.por ? 'Revisado por: ' + lastH.por : '';
         }
 
         var stBadge = '';
-        if(res.estado === 'aprobada') stBadge = '<span class="tag apr" style="font-size:12px; padding:6px 14px;">✔ RESERVA APROBADA</span>';
+        if(mixed) stBadge = '<span class="tag" style="font-size:12px; padding:6px 14px;">ESTADOS POR BLOQUE</span>';
+        else if(res.estado === 'aprobada') stBadge = '<span class="tag apr" style="font-size:12px; padding:6px 14px;">✔ RESERVA APROBADA</span>';
         else if(res.estado === 'rechazada') stBadge = '<span class="tag rej" style="font-size:12px; padding:6px 14px;">✖ SOLICITUD RECHAZADA</span>';
         else if(res.estado === 'info') stBadge = '<span class="tag inf" style="font-size:12px; padding:6px 14px;">⚠ REQUIERE MAYOR INFORMACIÓN</span>';
         else stBadge = '<span class="tag pen" style="font-size:12px; padding:6px 14px;">⏳ EN EVALUACIÓN (PENDIENTE)</span>';
@@ -2091,10 +2088,12 @@ $('pBody').addEventListener('click',function(ev){
                  +     '<span style="background:rgba(19,98,252,0.1); color:var(--pri); font-weight:700; font-size:11px; padding:4px 10px; border-radius:6px;">Bloque '+(idx+1)+'</span>'
                  +     '<b style="color:var(--tx); font-size:13px;">🏛 '+esc(b.aula)+'</b>'
                  +     '<span style="color:var(--mut); font-size:13px;">· 📅 '+fmtDayNice(b.fecha)+'</span>'
+                 +     '<span class="tag '+tcls(b.estado)+'">'+esc(elab(b.estado))+'</span>'
                  +   '</div>'
                  +   '<div style="font-weight:700; color:#5a00cc; font-size:13px; background:#f5f0ff; padding:4px 12px; border-radius:99px; border:1px solid #e9d5ff;">'
                  +     '🕒 '+hm(b.inicio)+' – '+hm(b.fin)+' <span style="font-weight:500; font-size:11px;">('+hrsTxt+')</span>'
                  +   '</div>'
+                 +   (l.length>1&&b.obs?'<div class="mut" style="flex-basis:100%; font-size:12px;">'+esc(b.obs)+'</div>':'')
                  + '</div>';
         }).join('');
         
@@ -2111,7 +2110,7 @@ $('pBody').addEventListener('click',function(ev){
             +   '<div><span class="mut" style="font-size:11px; display:block;">Sede</span><b style="font-size:13px; color:var(--tx);">📍 '+esc(res.sede||'—')+'</b></div>'
             +   '<div><span class="mut" style="font-size:11px; display:block;">Evento / Motivo</span><b style="font-size:13px; color:var(--tx);">🎯 '+esc(res.titulo||res.motivo||'—')+'</b></div>'
             + '</div>'
-            + renderTimeline(res.estado, res.obs, [dateReg, dateRes], revBy)
+            + (l.length===1?renderTimeline(res.estado, res.obs, [dateReg, dateRes], revBy):'')
             + '<div style="margin-top:18px;">'
             +   '<b style="font-size:13px; color:var(--tx); display:block; margin-bottom:8px;">📋 Ambientes y Horarios Solicitados ('+l.length+'):</b>'
             +   detalleCards
@@ -2675,31 +2674,42 @@ function renderCfg(){renderUsers();renderSed();renderTiStaff();}
 document.querySelector('.cnav').addEventListener('click',function(ev){var b=ev.target.closest('button[data-c]');if(!b)return;
   [['acc','cAcc'],['reg','cReg'],['sed','cSed'],['tistaff','cTiStaff']].forEach(function(x){$(x[1]).hidden=x[0]!==b.dataset.c});document.querySelectorAll('.cnav button').forEach(function(x){x.classList.toggle('act',x===b)})});
 fillReg();
-var curId=null;
+var curId=null, detailSchedule=null, savingBlocks=new Set();
 function tcls(e){return e==='aprobada'?'apr':e==='rechazada'?'rej':e==='info'?'inf':'pen'}
 function elab(e){return e==='info'?'requiere información':(e||'')}
 function updMail(){var b=bookings.find(function(x){return x.id===curId}),a=$('dmail');if(!b||!b.correo){a.hidden=true;return}a.hidden=false;a.href='mailto:'+encodeURIComponent(b.correo)+'?subject='+encodeURIComponent('Reserva '+b.aula+' · '+b.fecha)+'&body='+encodeURIComponent($('dobs').value)}
 
+function confirmDeleteBlock(id){
+  var b=bookings.find(function(row){return row.id===id});
+  if(!b||!db||!isAdmin())return;
+  customConfirm('¿Eliminar el bloque del '+fmtDayNice(b.fecha)+', '+hm(b.inicio)+'–'+hm(b.fin)+'?', 'danger', function(){
+    if(!isAdmin()||!bookings.some(function(row){return row.id===id}))return;
+    db.doc('reservas/'+id).delete().then(function(){showToast('Bloque eliminado','success')}).catch(err);
+  });
+}
+
 function openDetail(id, readOnly){
   var b=bookings.find(function(x){return x.id===id});if(!b)return;curId=id;
+  detailSchedule={fecha:b.fecha,inicio:b.inicio,fin:b.fin};
   var r=function(l,v){return v?'<tr><th style="width:38%">'+l+'</th><td>'+v+'</td></tr>':''};
-  var hist=(b.historial||[]).slice().reverse().map(function(h){return '<div class="item"><span class="tag '+tcls(h.estado)+'">'+elab(h.estado)+'</span> '+esc(h.por)+' · '+new Date(h.cuando).toLocaleString('es-PE')+(h.obs?'<br>'+esc(h.obs):'')+'</div>'}).join('');
+  var hist=(b.historial||[]).slice().reverse().map(function(h){return '<div class="item"><span class="tag '+(h.accion==='horario'?'':tcls(h.estado))+'">'+(h.accion==='horario'?'Fecha u horario actualizado':elab(h.estado))+'</span> '+esc(h.por)+' · '+new Date(h.cuando).toLocaleString('es-PE')+(h.obs?'<br>'+esc(h.obs):'')+'</div>'}).join('');
   
-  var isPending = b.estado === 'pendiente' || b.estado === 'info';
   var showAdmin = isAdmin() && !readOnly;
-  var editHtml = (showAdmin && isPending) ? 
+  var editHtml = showAdmin ?
     '<div style="background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:12px; margin-top:12px; margin-bottom:12px;">'
-    + '<b style="display:block; margin-bottom:8px; color:var(--pri);">✏️ Modificar Horario de la Reserva (Opcional)</b>'
-    + '<div class="f2" style="gap:10px;"><div><label>Hora de Inicio</label><input type="time" id="eIni" value="'+hm(b.inicio)+'" style="margin:0; background:#fff;"></div>'
-    + '<div><label>Hora de Fin</label><input type="time" id="eFin" value="'+hm(b.fin)+'" style="margin:0; background:#fff;"></div></div>'
-    + '<p class="mut" style="margin:8px 0 0; font-size:11px;">Al aprobar, el sistema usará estos horarios en caso decidas extender o reducir la reserva.</p></div>' 
+    + '<b style="display:block; margin-bottom:8px; color:var(--pri);">✏️ Fecha y horario de este bloque</b>'
+    + '<label for="eFecha">Fecha</label><input type="date" id="eFecha" value="'+qa(b.fecha)+'" style="background:#fff;">'
+    + '<div class="f2" style="gap:10px;"><div><label for="eIni">Hora de inicio</label><input type="time" id="eIni" value="'+hm(b.inicio)+'" style="margin:0; background:#fff;"></div>'
+    + '<div><label for="eFin">Hora de fin</label><input type="time" id="eFin" value="'+hm(b.fin%1440)+'" style="margin:0; background:#fff;"></div></div>'
+    + '<p class="mut" style="margin:8px 0; font-size:11px;">Usa 00:00 como hora de fin si el bloque cierra a medianoche.</p>'
+    + '<button class="sec" data-r="horario">Guardar fecha y horario</button></div>'
     : '';
 
-  $('dd').innerHTML='<div class="bar"><b>Detalle de la reserva</b><span class="tag '+tcls(b.estado)+'">'+elab(b.estado)+'</span></div><table>'
+  $('dd').innerHTML='<div class="bar"><b>Detalle del bloque</b><span class="tag '+tcls(b.estado)+'">'+elab(b.estado)+'</span></div><table>'
    +r('Sede / ambiente',esc(b.sede)+' · '+esc(b.aula))+r('Fecha',b.fecha)+r('Horario',hm(b.inicio)+' – '+hm(b.fin)+' ('+(b.fin-b.inicio)/60+' h)')
    +r('Solicitante',esc(b.nombre))+r('Documento (DNI)',esc(b.dni))+r('Tipo de solicitante',esc(b.tipoUsuario))+r('Correo',esc(b.correo))+r('Teléfono',esc(b.telefono))+r('Cargo',esc(b.cargo))+r('Área / dependencia',esc(b.area))
    +r('Evento',esc(b.titulo))+r('Tipo de evento',esc(b.tipoEvento||b.tipoMotivo))+r('Asistentes',esc(b.asistentes||''))+r('Propósito / justificación',esc(b.motivo))+r('Requerimientos',esc((b.req||[]).join(', ')||'Solo el ambiente')+(b.reqExtra?' · '+esc(b.reqExtra):''))
-   +r('Código de solicitud',esc(b.grupo))+r('Incluye',grpTxt(b))
+   +r('Código de solicitud',esc(b.grupo))+r('Bloques con este código',grpTxt(b))
    +r('Registrada',b.creada?new Date(b.creada).toLocaleString('es-PE'):'')+'</table>'
    + (readOnly ? '<div style="margin-top:16px; padding:12px; background:var(--bg); border-radius:12px; border:1px solid var(--line); text-align:center;"><b style="color:var(--mut);">Estado Actual:</b> <span class="tag '+tcls(b.estado)+'" style="font-size:14px; padding:4px 10px; margin-left:8px;">'+(b.estado).toUpperCase()+'</span></div>' : '')
    + (hist?'<b style="display:block;margin-top:12px">Historial de decisiones</b>'+hist:'');
@@ -2707,38 +2717,70 @@ function openDetail(id, readOnly){
   $('dEditTimeBox').innerHTML = editHtml;
   $('dadm').hidden = !showAdmin;
   $('dobs').value='';
+  $('dadm').querySelectorAll('button[data-r]').forEach(function(button){button.disabled=savingBlocks.has(id)});
   if(showAdmin) updMail();
   $('dlg2').showModal();
 }
 
-function resolve(r){
-  var b=bookings.find(function(x){return x.id===curId});if(!b||!db||!isAdmin())return;var o=$('dobs').value.trim();
-  if(r!=='aprobada'&&!o){showToast('Escribe una observación para explicar la decisión.', 'error');return}
-  
-  var nIni = b.inicio, nFin = b.fin;
-  if($('eIni') && $('eFin')) {
-      var pI = $('eIni').value.split(':'), pF = $('eFin').value.split(':');
-      if(pI.length===2 && pF.length===2) {
-          nIni = +pI[0]*60 + +pI[1];
-          nFin = +pF[0]*60 + +pF[1];
-      }
-      if(nFin <= nIni) { showToast('El horario modificado es inválido (fin debe ser mayor que inicio).', 'error'); return; }
+function sameBlockSchedule(a,b){return a.fecha===b.fecha&&a.inicio===b.inicio&&a.fin===b.fin}
+
+function blockHasConflict(id,b){
+  var room=b.aulaBase||b.aula, sub=extractBookingSub(b,room);
+  return bookings.some(function(other){
+    if(other.id===id||other.estado==='rechazada'||other.sede!==b.sede||other.fecha!==b.fecha||
+       (other.aulaBase||other.aula)!==room||other.inicio>=b.fin||other.fin<=b.inicio)return false;
+    var otherSub=extractBookingSub(other,room);
+    return !sub||!otherSub||sub===otherSub;
+  });
+}
+
+async function resolve(action){
+  var id=curId, original=detailSchedule, actor=curUid;
+  if(!id||!original||!db||!isAdmin()||$('dadm').hidden||!$('dlg2').open||savingBlocks.has(id))return;
+  var note=$('dobs').value.trim(), reschedule=action==='horario';
+  if((action==='rechazada'||action==='info')&&!note){showToast('Escribe una observación para explicar la decisión.', 'error');return}
+
+  var schedule=null;
+  if(reschedule||action==='aprobada'){
+    var date=$('eFecha').value, start=$('eIni').value, end=$('eFin').value;
+    var minutes=function(time){var parts=time.split(':');return +parts[0]*60 + +parts[1]};
+    schedule={fecha:date,inicio:minutes(start),fin:end==='00:00'?1440:minutes(end)};
+    if(!date||!start||!end||schedule.fin<=schedule.inicio){showToast('Indica una fecha y un horario válido.', 'error');return}
+    if(sameBlockSchedule(schedule,original)){
+      if(reschedule){showToast('Cambia la fecha o el horario antes de guardar.', 'info');return}
+      schedule=null;
+    }
   }
 
-  var tg=b.grupo?bookings.filter(function(x){return x.grupo===b.grupo&&x.sede===b.sede}):[b];
-  
-  Promise.all(tg.map(function(t){
-      var h=(t.historial||[]).concat([{estado:r,obs:o,por:who||'Personal',cuando:Date.now()}]);
-      var updateObj = {estado:r,obs:o,historial:h};
-      if(t.id === curId) { updateObj.inicio = nIni; updateObj.fin = nFin; }
-      
-      return db.doc('reservas/'+t.id).update(updateObj).then(function(){
-          var reservaData = Object.assign({}, t, updateObj);
-          enviarCorreoFirebase(reservaData, r, o);
-      });
-  }))
-  .then(function(){$('dlg2').close(); showToast('Estado actualizado a '+r, 'success');})
-  .catch(function(e){showToast('No se pudo guardar: '+(e&&e.message||e), 'error')})
+  var ref=db.collection('reservas').doc(id), author=who||'Personal', when=Date.now();
+  savingBlocks.add(id);
+  $('dadm').querySelectorAll('button[data-r]').forEach(function(button){button.disabled=true});
+  try{
+    var saved=await db.runTransaction(async function(transaction){
+      var snapshot=await transaction.get(ref), block=snapshot.data();
+      if(!snapshot.exists||!block)throw new Error('El bloque ya no existe.');
+      if(!isAdmin()||curUid!==actor||(siteScope&&siteScope!==block.sede))throw new Error('Ya no tienes acceso a este bloque.');
+      if(schedule&&!sameBlockSchedule(block,original))throw new Error('El horario ya cambió. Cierra y vuelve a abrir el bloque.');
+
+      var state=reschedule?block.estado:action, updated=Object.assign({},block,schedule,{estado:state});
+      if(state!=='rechazada'&&(schedule||block.estado==='rechazada')&&blockHasConflict(id,updated)){
+        throw new Error('El ambiente ya está ocupado en ese horario.');
+      }
+      var entry={estado:state,obs:note,por:author,cuando:when};
+      if(reschedule)entry.accion='horario';
+      var changes={historial:(block.historial||[]).concat(entry)};
+      if(!reschedule){changes.estado=state;changes.obs=note}
+      if(schedule)Object.assign(changes,schedule);
+      transaction.update(ref,changes);
+      return updated;
+    });
+    if(curId===id)$('dlg2').close();
+    showToast(reschedule?'Fecha y horario del bloque actualizados':'Estado del bloque actualizado a '+elab(action),'success');
+    if(!reschedule)enviarCorreoFirebase(Object.assign({},saved,{bloques:null,soloBloque:true}),action,note);
+  }catch(e){err(e)}finally{
+    savingBlocks.delete(id);
+    if(curId===id)$('dadm').querySelectorAll('button[data-r]').forEach(function(button){button.disabled=false});
+  }
 }
 
 $('dadm').addEventListener('click',function(ev){var bt=ev.target.closest('button[data-r]');if(bt)resolve(bt.dataset.r)});
@@ -2810,9 +2852,9 @@ function generarPlantillaCorreo(reserva, estado, obs) {
             '</div>' +
             '<div style="padding: 30px;">' +
                 '<span style="border: 1px solid #d4b3ff; color: #5a00cc; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: bold; letter-spacing: 0.5px; display: inline-block; margin-bottom: 20px;">' + cfg.pill + '</span>' +
-                '<h2 style="color: #111; margin: 0 0 16px; font-size: 22px;">' + cfg.tit + '</h2>' +
+                '<h2 style="color: #111; margin: 0 0 16px; font-size: 22px;">' + (reserva.soloBloque?'Estado de tu bloque del '+esc(reserva.fecha):cfg.tit) + '</h2>' +
                 '<p style="font-size: 15px; margin-bottom: 12px;">Hola <b>' + esc(reserva.nombre) + '</b>,</p>' +
-                '<p style="font-size: 14px; color: #555; line-height: 1.5;">Se ha actualizado el estado de tu solicitud de reserva para el ambiente <b>' + esc(reserva.aula) + '</b> en la sede <b>' + esc(reserva.sede) + '</b>.</p>' +
+                '<p style="font-size: 14px; color: #555; line-height: 1.5;">Se ha actualizado el estado de '+(reserva.soloBloque?'un bloque de tu reserva':'tu solicitud de reserva')+' para el ambiente <b>' + esc(reserva.aula) + '</b> en la sede <b>' + esc(reserva.sede) + '</b>.</p>' +
                 statusBar +
                 '<div style="background-color: ' + cfg.bgBox + '; border-radius: 12px; padding: 20px; margin: 24px 0;">' +
                     '<h3 style="color: #5a00cc; margin: 0 0 12px; font-size: 16px;">💜 Detalles de la Reserva (Código: ' + esc(reserva.grupo) + ')</h3>' +
@@ -2852,7 +2894,7 @@ function enviarCorreoFirebase(reserva, estado, obs) {
 
     var payload = {
         para: reserva.correo,
-        asunto: 'Tu reserva en ' + reserva.sede + ' está ' + estadoTexto + ' (' + reserva.grupo + ')',
+        asunto: (reserva.soloBloque?'Bloque del '+reserva.fecha+' en '+reserva.sede+' · ':'Tu reserva en '+reserva.sede+' está ') + estadoTexto + ' (' + reserva.grupo + ')',
         htmlBody: generarPlantillaCorreo(reserva, estado, obs)
     };
 
