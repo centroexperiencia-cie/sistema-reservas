@@ -576,6 +576,53 @@ dialog::backdrop { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(4px
 .n-dot.rej { background: #ef4444; }
 .n-dot.pen { background: #f59e0b; }
 .n-dot.inf { background: #ea580c; }
+.manual-event { box-shadow: inset 3px 0 currentColor; padding-left: 7px; }
+.manual-event-start { cursor: pointer; font-weight: 700; text-overflow: ellipsis; }
+.manual-event-start small { font-weight: 500; opacity: .85; }
+.c.manual-event.apr { color: #991b1b; background: #fecaca; }
+.c.manual-event.pen { color: #78350f; background: #fef3c7; }
+.c.manual-event.inf { color: #9a3412; background: #ffedd5; }
+.c.closure-cell, .pc.x.closure-cell, .cal-closure-day { background: repeating-linear-gradient(135deg,#f3e8ff 0 8px,#faf5ff 8px 16px); color: #5b21b6; }
+.c.closure-cell, .pc.x.closure-cell { cursor: not-allowed; }
+.closure-label { display: block; color: #5b21b6; background: #f3e8ff; margin-top: 3px; padding: 3px 5px; border-radius: 6px; font-size: 10px; font-weight: 700; white-space: normal; overflow-wrap: anywhere; }
+#dlgQuick { width: min(840px, 94vw); }
+.quick-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+.quick-calendar { padding: 12px; border: 1px solid var(--line); background: var(--bg); border-radius: 14px; }
+.quick-calendar-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+.quick-calendar-head button { padding: 4px 10px; }
+.quick-month { display: grid; grid-template-columns: 28px repeat(7, minmax(0, 1fr)); gap: 3px; user-select: none; }
+.quick-weekday { font-size: 11px; text-align: center; color: var(--mut); }
+.quick-day, .quick-week { color: var(--tx); background: transparent; border: 1px solid transparent; box-shadow: none; padding: 0; min-height: 33px; border-radius: 8px; font-size: 12px; }
+.quick-day { touch-action: none; }
+.quick-week { color: var(--pri); font-size: 11px; }
+.quick-day.q-other { color: var(--mut); }
+.quick-day.q-today { border-color: var(--pri); }
+.quick-day.q-closed { background: #f3e8ff; color: #5b21b6; }
+.quick-day.q-selected, .quick-day:hover, .quick-week:hover { background: #dbeafe; color: #1e40af; }
+.quick-day.q-selected.q-closed { background: #e9d5ff; color: #5b21b6; }
+.quick-day:disabled { opacity: .45; }
+.quick-review { margin-top: 16px; }
+.quick-review .bar { gap: 8px; }
+.quick-rows { max-height: min(34vh, 350px); overflow: auto; margin-top: 8px; border: 1px solid var(--line); border-radius: 12px; }
+.quick-date { padding: 10px 12px; }
+.quick-date + .quick-date { border-top: 1px solid var(--line); }
+.quick-date-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.quick-date-head label { display: flex; align-items: center; gap: 8px; margin: 0; }
+.quick-date-head input { width: auto; margin: 0; }
+.quick-time { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)) auto; gap: 8px; align-items: end; margin-top: 6px; }
+.quick-time input { margin: 0; min-width: 0; }
+.quick-time button, [data-q-add-slot] { padding: 5px 8px; }
+.quick-date.q-excluded .quick-slots { opacity: .6; }
+.quick-date.q-excluded .quick-status { color: var(--mut); }
+.quick-status { color: #92400e; font-size: 12px; }
+.quick-extra { display: flex; flex-wrap: wrap; gap: 8px; align-items: end; padding: 8px 0; }
+.quick-extra input { width: auto; margin-bottom: 0; }
+.quick-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; margin-top: 12px; }
+.exception-option { display: flex; align-items: center; gap: 8px; margin: 8px 0; }
+.exception-option input { width: auto; margin: 0; }
+.tag.exception { background: #ede9fe; color: #5b21b6; }
+.cal-event.exception { outline: 1px solid #7c3aed; }
+@media (max-width: 680px) { .quick-layout { grid-template-columns: 1fr; } #dlgQuick { padding: 16px; } }
 </style>
 </head>
 <body class="pub">
@@ -600,7 +647,7 @@ dialog::backdrop { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(4px
   </div>
 </div>
 
-<div class="nav"><button class="act" data-v="ini">🏠 Inicio</button><button data-v="portal">🌐 Portal público</button><button data-v="hor" id="navHor" hidden>📋 Reservas realizadas</button><button data-v="res" id="navRes" hidden>⚡ Reserva Manual</button><button data-v="cal" id="navCal" hidden>📅 Calendario Visual</button><button data-v="ti" id="navTi" hidden>💻 Reporte TI</button><button data-v="rep" id="navRep" hidden>📊 Reportes</button><button data-v="cfg" id="navPanel" hidden>⚙ Configuración</button></div>
+<div class="nav"><button class="act" data-v="ini">🏠 Inicio</button><button data-v="portal">🌐 Portal público</button><button data-v="hor" id="navHor" hidden>📋 Reservas realizadas</button><button data-v="res" id="navRes" hidden>⚡ Reserva Manual</button><button data-v="cal" id="navCal" hidden>📅 Calendario Visual</button><button data-v="cierres" id="navClosures" hidden>🏷️ Feriados y cierres</button><button data-v="ti" id="navTi" hidden>💻 Reporte TI</button><button data-v="rep" id="navRep" hidden>📊 Reportes</button><button data-v="cfg" id="navPanel" hidden>⚙ Configuración</button></div>
 
 <div id="vPortal">
   <div class="phead"><div class="logo">CENTRO DE<br>EXPERIENCIA</div><b style="font-size:16px;">Reserva de Espacios y Ambientes</b><span class="sp"></span><span class="pill">Reserva de Ambientes Físicos</span><button class="sec" id="pLogin">🔒 Acceso personal</button><button class="sec" id="pBack" hidden>↩ Volver a vista de personal</button></div>
@@ -722,6 +769,7 @@ dialog::backdrop { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(4px
   <section class="card">
     <div class="bar">
       <b style="color:var(--pri); font-size:16px; display:flex; align-items:center; gap:6px;">⚡ Reserva Manual Rápida</b>
+      <button id="quickOpen" class="sec" type="button">📅 Reservar por fecha</button>
     </div>
     <p class="mut" style="margin-bottom:16px;">Arrastra de la primera franja a la última para agregar un horario. Puedes seguir seleccionando en otros días y semanas. Para quitar un bloque, haz clic sobre él. Pulsa <b>Bloquear Espacio</b> para guardar todos los horarios con un solo nombre de evento.</p>
     
@@ -734,6 +782,8 @@ dialog::backdrop { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(4px
         <select id="manualSub" style="margin-top:6px; width:100%; border-color:var(--pri); font-weight:600;"></select>
         <small class="mut" style="display:block;margin-top:6px;">La disponibilidad y el bloqueo se aplicarán al espacio seleccionado. Las reservas del ambiente completo también se consideran ocupadas.</small>
     </div>
+    <label class="exception-option" for="manualOutside"><input id="manualOutside" type="checkbox"> Habilitar horario excepcional</label>
+    <p class="mut" style="margin-top:0">Amplía la cuadrícula de 00:00 a 24:00 para reservar fuera del horario de atención.</p>
     
     <!-- BARRA DE NAVEGACIÓN DE SEMANAS (Faltaba esto y rompía el sistema) -->
     <div class="bar" style="margin-top:10px; background:var(--bg); padding:10px 14px; border-radius:12px; border:1px solid var(--line);">
@@ -751,9 +801,26 @@ dialog::backdrop { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(4px
     </div>
     <div class="wrap"><div class="grid" id="grid"></div></div>
     
-    <div style="margin-top:16px;"><b>Reservas de la semana en este ambiente</b><div id="list"></div></div>
+    <div style="margin-top:16px;"><div class="bar"><b id="manualListTitle">Reservas de la semana en este ambiente</b><input id="manualSearch" type="search" aria-label="Buscar evento en todas las fechas" placeholder="Buscar evento en todas las fechas" style="width:min(100%,300px);margin:0"></div><div id="list"></div></div>
   </section>
 </main>
+
+<main id="vClosures" class="one" hidden><section class="card">
+  <div class="bar"><b>🏷️ Feriados y cierres</b></div>
+  <p class="mut">Bloquea días completos de atención. El motivo aparecerá en los calendarios de las sedes seleccionadas.</p>
+  <form id="closureForm">
+    <div class="f2">
+      <div><label for="closureType">Tipo</label><select id="closureType"><option value="feriado">Feriado</option><option value="no-laborable">Día no laborable</option><option value="cierre">Cierre extraordinario</option></select></div>
+      <div><label for="closureReason">Motivo</label><input id="closureReason" type="text" maxlength="100" required placeholder="Ej. Feriado regional"></div>
+      <div><label for="closureFrom">Desde</label><input id="closureFrom" type="date" required></div>
+      <div><label for="closureTo">Hasta</label><input id="closureTo" type="date"></div>
+      <div><label for="closureScope">Alcance</label><select id="closureScope"><option value="sede">Una sede</option><option value="regional">Regional · sedes seleccionadas</option><option value="nacional">Nacional · todas las sedes</option></select></div>
+      <div id="closureSitesField"><label for="closureSites">Sede</label><select id="closureSites"></select></div>
+    </div>
+    <div class="bar"><p id="closureImpact" class="mut" aria-live="polite"></p><div><button type="button" id="closureCancel" class="sec" hidden>Cancelar edición</button> <button type="submit" id="closureSave">Guardar cierre</button></div></div>
+  </form>
+  <div class="wrap" id="closureList"></div>
+</section></main>
 
 <main id="vConfig" class="one" hidden><section>
  <div class="card"><b style="font-size:16px">⚙ Configuración</b> <span class="mut">Solo administradores</span>
@@ -774,6 +841,7 @@ dialog::backdrop { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(4px
       <label><input type="checkbox" value="cal" checked> Calendario Visual</label>
       <label><input type="checkbox" value="ti"> Reporte TI</label>
       <label><input type="checkbox" value="rep" checked> Reportes</label>
+      <label><input type="checkbox" value="cierres"> Feriados y cierres</label>
       <label><input type="checkbox" value="cfg"> Configuración General (Superadmin)</label>
   </div>
   
@@ -898,6 +966,32 @@ dialog::backdrop { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(4px
 </dialog>
 
 <!-- Modal Edición de Módulos para Usuario -->
+<dialog id="dlgQuick" aria-labelledby="quickHeading">
+    <b id="quickHeading">📅 Reservar por fecha</b><p id="quickTarget" class="mut"></p>
+    <form id="quickForm">
+      <div class="quick-layout">
+        <section class="quick-calendar" aria-label="Calendario de selección">
+          <div class="quick-calendar-head"><button id="quickPrev" class="sec" type="button" aria-label="Mes anterior">‹</button><b id="quickMonth" aria-live="polite"></b><button id="quickNext" class="sec" type="button" aria-label="Mes siguiente">›</button></div>
+          <div id="quickCalendar" class="quick-month"></div>
+          <small class="mut">Arrastra entre fechas o pulsa «Sem» para elegir una semana. Usa Desde y Hasta para abarcar otros meses.</small>
+        </section>
+        <section aria-label="Datos y repetición del evento">
+          <label for="quickTitle">Nombre del evento</label><input id="quickTitle" required maxlength="180" placeholder="Ej. Taller de inducción">
+          <div class="f2"><div><label for="quickFrom">Desde</label><input id="quickFrom" type="date"></div><div><label for="quickTo">Hasta</label><input id="quickTo" type="date"></div></div>
+          <div class="f2"><div><label for="quickStart">Inicio habitual</label><input id="quickStart" type="time"></div><div><label for="quickEnd">Fin habitual</label><input id="quickEnd" type="time"></div></div>
+          <label class="exception-option" for="quickOutside"><input id="quickOutside" type="checkbox"> Permitir horario excepcional</label>
+          <div class="f2"><div><label for="quickRepeat">Repetición</label><select id="quickRepeat"><option value="0">No se repite</option><option value="7">Cada semana</option><option value="14">Cada dos semanas</option></select></div><div id="quickUntilField" hidden><label for="quickUntil">Repetir hasta</label><input id="quickUntil" type="date"></div></div>
+        </section>
+      </div>
+      <section class="quick-review" aria-label="Horarios seleccionados">
+        <div class="bar"><b id="quickSummary" aria-live="polite">Fechas seleccionadas</b><button id="quickSkip" class="sec" type="button" hidden>Omitir fechas no disponibles</button></div>
+        <div id="quickRows" class="quick-rows"></div>
+        <div class="quick-extra"><div><label for="quickExtraDate">Fecha adicional</label><input id="quickExtraDate" type="date"></div><button id="quickAdd" class="sec" type="button">Añadir fecha</button></div>
+      </section>
+      <p id="quickError" class="mut" role="status"></p>
+      <div class="quick-actions"><button id="quickClose" class="sec" type="button">Cancelar</button><button id="quickSave" type="submit" class="ok">Bloquear horarios</button></div>
+    </form>
+</dialog>
 <dialog id="dlgEditMods" style="width: min(400px, 92vw);">
     <b style="font-size:16px;">Permisos del usuario</b>
     <p id="emUser" class="mut"></p>
@@ -908,6 +1002,7 @@ dialog::backdrop { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(4px
         <label><input type="checkbox" value="cal"> Calendario Visual</label>
         <label><input type="checkbox" value="ti"> Reporte TI</label>
         <label><input type="checkbox" value="rep"> Reportes</label>
+        <label><input type="checkbox" value="cierres"> Feriados y cierres</label>
         <label><input type="checkbox" value="cfg"> Configuración general (Superadmin)</label>
     </div>
     <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:20px;">
@@ -984,6 +1079,8 @@ var sedes={"Cusco":["Centro de Experiencia"]}, bookings=[], db=null, staff=false
 var siteScope='', allData={sedes:sedes, bookings:[], ambientes:[], sedesInfo:[], tiReports:[], tiStaff:[], tiSedes:[]};
 function isAdmin(){return staff&&!preview}
 var sede="Cusco", aula="Centro de Experiencia", manualBlocks=[], manualDrag=null, manualSaving=false, manualPending=null, weekStart=monday(new Date());
+var closures=[], closuresReady=false, closureEdit=null, closureSaving=false;
+var closureTypes={feriado:'Feriado','no-laborable':'Día no laborable',cierre:'Cierre extraordinario'};
 var calWeekStart=monday(new Date());
 
 // Variables de Reporte TI y Permisos
@@ -1088,12 +1185,119 @@ function manualConflict(list,date,start,end){
     return !selected||!bookedSub||bookedSub===selected;
   });
 }
-function manualUnavailable(date,start,end,now){
+function closureApplies(entry,location,date){
+  return date>=entry.from&&date<=entry.to&&(entry.scope==='nacional'||entry.sites.includes(location));
+}
+function closuresFor(location,date){return location?closures.filter(function(entry){return closureApplies(entry,location,date)}):[]}
+function closureText(entries){return entries.map(function(entry){return closureTypes[entry.type]+' · '+entry.reason}).join(' / ')}
+function closureLabel(entries){
+    if(!entries.length)return '';
+    var label=closureText(entries);
+    return '<span class="closure-label" title="'+qa(label)+'">'+esc(label)+'</span>';
+}
+function closedMessage(location,date){
+    var entries=closuresFor(location,date);
+    return entries.length?'El '+fmtDayNice(date)+' está bloqueado. '+closureText(entries):'';
+}
+function activeClosureForm(){
+    var scope=siteScope?'sede':$('closureScope').value;
+    return {type:$('closureType').value,reason:$('closureReason').value.trim(),from:$('closureFrom').value,
+        to:$('closureTo').value||$('closureFrom').value,scope:scope,sites:scope==='nacional'?[]:Array.from($('closureSites').selectedOptions,function(o){return o.value})};
+}
+function closureIsEditable(entry){
+    return hasMod('cierres')&&(!siteScope||(entry.scope==='sede'&&entry.sites.length===1&&entry.sites[0]===siteScope));
+}
+function closureEntries(data){return Array.isArray(data&&data.cierresCalendario)?data.cierresCalendario:[]}
+function fillClosureSites(selected){
+    var scope=$('closureScope'), list=$('closureSites');
+    if(siteScope)scope.value='sede';
+    scope.disabled=!!siteScope||closureSaving;
+    var regional=scope.value==='regional';
+    list.multiple=regional;list.size=regional?4:1;
+    $('closureSitesField').hidden=scope.value==='nacional';
+    $('closureSitesField').querySelector('label').textContent=regional?'Sedes que incluye':'Sede';
+    var names=Object.keys(sedes), keep=selected||Array.from(list.selectedOptions,function(o){return o.value});
+    list.replaceChildren();
+    if(!regional&&!siteScope)list.add(new Option('Selecciona una sede',''));
+    names.forEach(function(name){var o=new Option(name,name);o.selected=siteScope===name||keep.includes(name);list.add(o)});
+    if(!regional&&!siteScope&&!names.some(function(name){return keep.includes(name)}))list.value='';
+}
+function renderClosureImpact(){
+    var entry=activeClosureForm();
+    $('closureTo').min=entry.from;
+    var count=entry.from&&entry.to>=entry.from?bookings.filter(function(b){return b.estado!=='rechazada'&&closureApplies(entry,b.sede,b.fecha)}).length:0;
+    $('closureImpact').textContent=count?'Coincide con '+count+' bloque(s) ya registrados. Los puedes revisar en Reservas realizadas.':'';
+}
+function renderClosures(){
+    if(!hasMod('cierres'))return;
+    fillClosureSites();renderClosureImpact();
+    var shown=closures.filter(function(entry){return !siteScope||entry.scope==='nacional'||entry.sites.includes(siteScope)});
+    $('closureList').innerHTML=shown.length?'<table><tr><th>Fecha</th><th>Motivo</th><th>Alcance</th><th></th></tr>'+shown.map(function(entry){
+        var place=entry.scope==='nacional'?'Nacional':entry.scope==='regional'?'Regional · '+(siteScope||entry.sites.join(', ')):entry.sites.join(', ');
+        return '<tr><td>'+fmtDayNice(entry.from)+(entry.from===entry.to?'':' – '+fmtDayNice(entry.to))+'</td><td><b>'+esc(closureTypes[entry.type])+'</b><br>'+esc(entry.reason)+'</td><td>'+esc(place)+'</td><td>'+(closureIsEditable(entry)?
+            '<button type="button" class="sec" data-closure-edit="'+qa(entry.id)+'">Editar</button> <button type="button" class="no" data-closure-delete="'+qa(entry.id)+'">Quitar</button>':'')+'</td></tr>';
+    }).join('')+'</table>':'<p class="mut">Aún no se han registrado feriados ni cierres.</p>';
+}
+function clearClosureForm(){
+    closureEdit=null;$('closureForm').reset();fillClosureSites([]);renderClosureImpact();$('closureCancel').hidden=true;$('closureSave').textContent='Guardar cierre';
+}
+async function writeClosure(entry,original){
+    if(!db||!closuresReady||closureSaving||!hasMod('cierres')||!closureIsEditable(entry||original))return;
+    var ref=db.doc('config/general'), actor=curUid;
+    closureSaving=true;$('closureSave').disabled=true;
+    try{
+        await db.runTransaction(async function(transaction){
+            var data=(await transaction.get(ref)).data(), list=closureEntries(data);
+            if(curUid!==actor||!closureIsEditable(entry||original))throw new Error('Ya no tienes permiso para cambiar este cierre.');
+            if(original){
+                var current=list.find(function(item){return item.id===original.id});
+                if(!current||current.revision!==original.revision)throw new Error('El cierre ya cambió. Vuelve a abrirlo.');
+                if(!closureIsEditable(current))throw new Error('El cierre corresponde a otro ámbito.');
+                list=list.filter(function(item){return item.id!==original.id});
+            }
+            if(entry)list=list.concat(entry);
+            list.sort(function(a,b){return a.from.localeCompare(b.from)||a.to.localeCompare(b.to)});
+            transaction.set(ref,{cierresCalendario:list},{merge:true});
+        });
+        if(curUid===actor&&(!original||!closureEdit||closureEdit.id===original.id))clearClosureForm();
+        showToast(entry?'Cierre guardado':'Cierre retirado','success');
+    }catch(e){err(e)}finally{closureSaving=false;$('closureSave').disabled=false;renderClosures()}
+}
+$('closureScope').onchange=function(){fillClosureSites([]);renderClosureImpact()};
+$('closureForm').addEventListener('input',renderClosureImpact);
+$('closureCancel').onclick=clearClosureForm;
+$('closureForm').onsubmit=function(ev){
+    ev.preventDefault();
+    if(!hasMod('cierres'))return;
+    if(!closuresReady){showToast('Espera a que se cargue el calendario de cierres.','error');return}
+    var entry=activeClosureForm();
+    if(!entry.reason||!entry.from||entry.to<entry.from){showToast('Indica el motivo y un rango válido de fechas.','error');return}
+    if(entry.scope!=='nacional'&&(!entry.sites.length||entry.sites.some(function(site){return !Object.hasOwn(sedes,site)}))){
+        showToast('Selecciona las sedes que abarca el cierre.','error');return;
+    }
+    entry.id=closureEdit?closureEdit.id:rnd();entry.revision=rnd();
+    writeClosure(entry,closureEdit);
+};
+$('closureList').addEventListener('click',function(ev){
+    var button=ev.target.closest('button');if(!button||closureSaving)return;
+    var entry=closures.find(function(item){return item.id===(button.dataset.closureEdit||button.dataset.closureDelete)});
+    if(!entry||!closureIsEditable(entry))return;
+    if(button.dataset.closureDelete){customConfirm('¿Quitar «'+entry.reason+'» del calendario?', 'danger',function(){writeClosure(null,entry)});return}
+    closureEdit=entry;$('closureType').value=entry.type;$('closureReason').value=entry.reason;
+    $('closureFrom').value=entry.from;$('closureTo').value=entry.to;$('closureScope').value=entry.scope;
+    fillClosureSites(entry.sites);renderClosureImpact();$('closureCancel').hidden=false;$('closureSave').textContent='Guardar cambios';$('closureReason').focus();
+});
+function outsideAttention(date,start,end){
   var weekday=new Date(date+'T00:00:00').getDay();
   var hours=(R.hd&&R.hd[weekday])||RDEF.hd[weekday];
+  return !hours||!hours.a||start<hours.i*60||end>hours.f*60;
+}
+function exceptionalBlock(block){return !!block.fueraDeHorario||outsideAttention(block.fecha,block.inicio,block.fin)}
+function showManualOutside(){return view==='res'&&$('manualOutside').checked&&hasMod('res')}
+function manualUnavailable(date,start,end,now,allowOutside){
   var today=iso(now), minutes=now.getHours()*60+now.getMinutes();
-  return !sede||!aula||date<today||(date===today&&start+R.paso<=minutes)||
-    !hours.a||start<hours.i*60||end>hours.f*60;
+  return !sede||!aula||date<today||(date===today&&start+R.paso<=minutes)||closuresFor(sede,date).length>0||
+    !allowOutside&&outsideAttention(date,start,end);
 }
 function syncManualSubSelect(){
   var wrap=$('manualSubWrap'),sel=$('manualSub');
@@ -1114,16 +1318,24 @@ function syncManualSubSelect(){
 
 function renderManualGrid(){
   var now=new Date(),todayIso=iso(now),e=dayOf(6);
+  var outside=showManualOutside(), first=outside?0:pStart(), slots=outside?1440/R.paso:pSlots();
   $('wk').textContent='Semana del '+dayOf(0).getDate()+'/'+(dayOf(0).getMonth()+1)+' al '+e.getDate()+'/'+(e.getMonth()+1);
   var list=cur(),h='<div class="h">HORA</div>',dates=DAYS.map(function(_,d){return iso(dayOf(d))});
-  for(var d=0;d<7;d++){var dd=dayOf(d);h+='<div class="h'+(iso(dd)===todayIso?' today':'')+'">'+DAYS[d]+'<small>'+dd.getDate()+'/'+String(dd.getMonth()+1).padStart(2,'0')+'</small></div>'}
-  for(var s=0;s<pSlots();s++){
-    var m=pStart()+s*R.paso,hr=(m%60===0);h+='<div class="t">'+(hr?hm(m):'')+'</div>';
+  var closedDays=dates.map(function(date){return closuresFor(sede,date)});
+  for(var d=0;d<7;d++){var dd=dayOf(d);h+='<div class="h'+(dates[d]===todayIso?' today':'')+'">'+DAYS[d]+'<small>'+dd.getDate()+'/'+String(dd.getMonth()+1).padStart(2,'0')+'</small>'+closureLabel(closedDays[d])+'</div>'}
+  for(var s=0;s<slots;s++){
+    var m=first+s*R.paso,hr=(m%60===0);h+='<div class="t">'+(hr?hm(m):'')+'</div>';
     for(var d2=0;d2<7;d2++){
-      var date=dates[d2],b=manualConflict(list,date,m,m+R.paso),cls='c'+(hr?' hr':''),txt='';
-      if(b){cls+=b.estado==='aprobada'?' apr':b.estado==='info'?' inf':' pen';if(m===b.inicio)txt=(b.estado==='aprobada'?'⊗ ':b.estado==='info'?'❓ ':'⏳ ')+esc(b.nombre||'')}
-      else if(manualUnavailable(date,m,m+R.paso,now))cls+=' past';
-      h+='<div class="'+cls+'" data-date="'+date+'" data-minutes="'+m+'">'+txt+'</div>';
+      var date=dates[d2],b=manualConflict(list,date,m,m+R.paso),cls='c'+(hr?' hr':''),txt='',hint='';
+      if(closedDays[d2].length){cls+=' closure-cell';hint=closureText(closedDays[d2]);if(!s)txt='🔒 Cerrado'}
+      else if(b){
+        var title=b.titulo||b.motivo||'Reserva', name=b.nombre||'';
+        cls+=' manual-event'+(b.estado==='aprobada'?' apr':b.estado==='info'?' inf':' pen');
+        hint=title+' · '+hm(b.inicio)+'–'+hm(b.fin)+(name?' · '+name:'');
+        if(m===first||b.inicio>=m){cls+=' manual-event-start';txt='▸ '+esc(title)+(name?' <small>· '+esc(name)+'</small>':'')}
+      }
+      else if(manualUnavailable(date,m,m+R.paso,now,outside))cls+=' past';
+      h+='<div class="'+cls+'" data-date="'+date+'" data-minutes="'+m+'"'+(hint?' title="'+qa(hint)+'"':'')+'>'+txt+'</div>';
     }
   }
   $('grid').innerHTML=h;
@@ -1133,17 +1345,25 @@ function renderManualGrid(){
 function render(){
   renderManualGrid();
   renderList();renderPanel();renderCal(); renderNotifs();
+  if(view==='cierres')renderClosures();
+  if(quickDraft&&$('dlgQuick').open){paintQuickDays();paintQuickReview()}
 }
 
 function renderList(){
   var from=iso(dayOf(0)),to=iso(dayOf(6));
-  var l=bookings.filter(function(b){return b.sede===sede&&(b.aulaBase||b.aula)===aula&&b.fecha>=from&&b.fecha<=to&&b.estado!=='rechazada'}).sort(function(x,y){return x.fecha+x.inicio<y.fecha+y.inicio?-1:1});
+  var normalize=function(value){return value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')};
+  var query=normalize($('manualSearch').value.trim());
+  $('manualListTitle').textContent=query?'Resultados en este ambiente':'Reservas de la semana en este ambiente';
+  var l=cur().filter(function(b){return query?normalize(b.titulo||b.motivo||'').includes(query):b.fecha>=from&&b.fecha<=to})
+      .sort(function(x,y){return x.fecha.localeCompare(y.fecha)||x.inicio-y.inicio});
   $('list').innerHTML=l.length?l.map(function(b){
     var act=isAdmin()?'<div style="margin-top:6px; display:flex; gap:6px;"><button data-open="'+b.id+'">Revisar</button> <button class="no" data-delres="'+b.id+'" style="padding:8px">Eliminar</button></div>':'';
-    return '<div class="item"><span class="tag '+tcls(b.estado)+'">'+elab(b.estado)+'</span> <b>'+b.fecha+'</b> '+hm(b.inicio)+'–'+hm(b.fin)+'<br>'+((manualSubOf(b))?'<b>🖥️ '+esc(manualSubOf(b))+'</b><br>':'')+esc(b.nombre)+' · '+esc(b.motivo)+act+'</div>'}).join(''):'<p class="mut">Sin reservas esta semana en este ambiente.</p>';
+    var dayClosures=closuresFor(b.sede,b.fecha);
+    return '<div class="item"><b>'+esc(b.titulo||b.motivo||'Reserva')+'</b> <span class="tag '+tcls(b.estado)+'">'+elab(b.estado)+'</span>'+(exceptionalBlock(b)?' <span class="tag exception">Horario excepcional</span>':'')+'<br><b>'+b.fecha+'</b> '+hm(b.inicio)+'–'+hm(b.fin)+' · '+esc(b.nombre)+((manualSubOf(b))?'<br><b>🖥️ '+esc(manualSubOf(b))+'</b>':'')+closureLabel(dayClosures)+act+'</div>'}).join(''):'<p class="mut">'+(query?'No hay eventos con ese nombre.':'Sin reservas esta semana en este ambiente.')+'</p>';
 }
+$('manualSearch').oninput=renderList;
 
-function canPick(el){return el&&!el.matches('.past,.pen,.apr,.inf')}
+function canPick(el){return el&&!el.matches('.past,.pen,.apr,.inf,.closure-cell')}
 function manualSelection(){
   if(!manualDrag)return manualBlocks;
   var block={fecha:manualDrag.fecha,inicio:Math.min(manualDrag.start,manualDrag.end),fin:Math.max(manualDrag.start,manualDrag.end)+R.paso};
@@ -1167,11 +1387,14 @@ function paintManualSelection(){
     el.classList.toggle('sel',canPick(el)&&blocks.some(function(b){return b.fecha===el.dataset.date&&time>=b.inicio&&time<b.fin}));
   });
   $('selinfo').textContent=blocks.length?selectionSummary(blocks):'Selecciona uno o varios horarios';
+  if(!showManualOutside()&&blocks.some(function(b){return outsideAttention(b.fecha,b.inicio,b.fin)}))$('selinfo').textContent+=' · Hay horarios fuera de atención';
   if(manualPending&&manualPending.next)$('selinfo').textContent+=' · '+manualPending.next+' de '+manualPending.blocks.length+' guardados';
   $('res').textContent=manualSaving?'Guardando…':manualPending?'Reintentar guardado':'⚡ Bloquear Espacio';
   $('res').disabled=!manualBlocks.length||!!manualDrag||manualSaving;
   $('clr').disabled=!blocks.length||manualSaving;
+  $('quickOpen').disabled=manualSaving||!!manualPending||!!manualDrag||!sede||!aula;
   $('sede').disabled=$('aula').disabled=$('manualSub').disabled=manualSaving;
+  $('manualOutside').disabled=manualSaving||!!manualPending;
 }
 function clearManualSelection(){manualBlocks=[];manualDrag=null;manualPending=null}
 var g=$('grid');
@@ -1194,7 +1417,7 @@ g.addEventListener('pointermove',function(ev){
   var point=document.elementFromPoint(ev.clientX,ev.clientY),el=point&&point.closest('#grid .c');
   if(!canPick(el)||el.dataset.date!==manualDrag.fecha)return;
   var end=+el.dataset.minutes, start=Math.min(manualDrag.start,end), finish=Math.max(manualDrag.start,end)+R.paso;
-  if(manualUnavailable(manualDrag.fecha,start,finish,new Date())||manualConflict(cur(),manualDrag.fecha,start,finish))return;
+  if(manualUnavailable(manualDrag.fecha,start,finish,new Date(),showManualOutside())||manualConflict(cur(),manualDrag.fecha,start,finish))return;
   if(end!==manualDrag.end){manualDrag.end=end;manualDrag.moved=true;paintManualSelection()}
 });
 window.addEventListener('pointerup',function(ev){
@@ -1210,16 +1433,17 @@ g.addEventListener('lostpointercapture',cancelManualDrag);
 function changeManualWeek(offset){manualDrag=null;weekStart.setDate(weekStart.getDate()+offset);renderManualGrid();renderList()}
 $('prev').onclick=function(){changeManualWeek(-7)};$('next').onclick=function(){changeManualWeek(7)};
 $('clr').onclick=function(){clearManualSelection();paintManualSelection()};
-$('sede').onchange=function(){sede=this.value;aula='';clearManualSelection();fillSelects();render()};
-$('aula').onchange=function(){aula=this.value;clearManualSelection();syncManualSubSelect();render()};
-$('manualSub').onchange=function(){clearManualSelection();renderManualGrid()};
+$('manualOutside').onchange=function(){manualDrag=null;renderManualGrid()};
+$('sede').onchange=function(){sede=this.value;aula='';$('manualOutside').checked=false;clearManualSelection();fillSelects();render()};
+$('aula').onchange=function(){aula=this.value;$('manualOutside').checked=false;clearManualSelection();syncManualSubSelect();render()};
+$('manualSub').onchange=function(){$('manualOutside').checked=false;clearManualSelection();renderManualGrid()};
 
 function manualTargetIsCurrent(target){
-    return hasMod('res')&&target[0]===sede&&target[1]===aula&&target[2]===manualSubValue()&&target[3]===curUid;
+    return view==='res'&&hasMod('res')&&target[0]===sede&&target[1]===aula&&target[2]===manualSubValue()&&target[3]===curUid;
 }
-function unavailableManualBlock(blocks,occupied,now){
+function unavailableManualBlock(blocks,occupied,now,allowOutside){
     return blocks.find(function(block){
-        return manualUnavailable(block.fecha,block.inicio,block.fin,now)||manualConflict(occupied,block.fecha,block.inicio,block.fin);
+        return manualUnavailable(block.fecha,block.inicio,block.fin,now,allowOutside)||manualConflict(occupied,block.fecha,block.inicio,block.fin);
     });
 }
 async function saveManualBlocks(pending){
@@ -1228,22 +1452,29 @@ async function saveManualBlocks(pending){
         // Firestore admite hasta 500 escrituras por lote. Las referencias se reutilizan al reintentar.
         while(pending.next<pending.blocks.length){
             if(manualPending!==pending||!manualTargetIsCurrent(pending.target))return;
+            if(!closuresReady)throw new Error('El calendario de cierres no está disponible.');
             var stop=Math.min(pending.next+500,pending.blocks.length), batch=db.batch();
             var occupied=cur().filter(function(b){return b.grupo!==pending.record.grupo});
-            var unavailable=unavailableManualBlock(pending.blocks.slice(pending.next),occupied,new Date());
+            var unavailable=unavailableManualBlock(pending.blocks.slice(pending.next),occupied,new Date(),pending.allowOutside);
             if(unavailable){
                 if(!pending.next)manualPending=null;
-                throw new Error('Un horario del '+unavailable.fecha+' ya no está disponible.');
+                throw new Error(closedMessage(sede,unavailable.fecha)||(!pending.allowOutside&&outsideAttention(unavailable.fecha,unavailable.inicio,unavailable.fin)?'El bloque del '+fmtDayNice(unavailable.fecha)+' requiere habilitar el horario excepcional.':'Un horario del '+unavailable.fecha+' ya no está disponible.'));
             }
             for(var i=pending.next;i<stop;i++){
                 var block=pending.blocks[i];
-                batch.set(pending.refs[i],Object.assign({},pending.record,block));
+                var outside=outsideAttention(block.fecha,block.inicio,block.fin);
+                var record=Object.assign({},pending.record,block);
+                if(outside){
+                    record.fueraDeHorario=true;
+                    record.historial=[Object.assign({},record.historial[0],{obs:'Reserva manual fuera del horario de atención'})];
+                }
+                batch.set(pending.refs[i],record);
             }
             await batch.commit();
             pending.next=stop;
             if(manualPending===pending)paintManualSelection();
         }
-        if(manualPending===pending)clearManualSelection();
+        if(manualPending===pending){clearManualSelection();$('manualOutside').checked=false}
         showToast('Horarios bloqueados · '+pending.record.grupo,'success');
         enviarCorreoFirebase(Object.assign({},pending.record,pending.blocks[0],{bloques:pending.blocks}), 'aprobada', 'Esta es una reserva manual gestionada internamente.');
     }catch(e){
@@ -1260,8 +1491,13 @@ $('res').onclick = function() {
     var blocks=manualBlocks, target=[sede,aula,manualSubValue(),curUid];
     var details=blocks.map(function(b){return b.fecha+' · '+hm(b.inicio)+' – '+hm(b.fin)});
     customPrompt(aula+' · '+selectionSummary(blocks)+'. Ingresa el nombre del evento:', function(val) {
-        if(!val || !val.trim()) { showToast('El nombre del evento es obligatorio.', 'error'); return; }
-        if(!manualTargetIsCurrent(target)||manualSaving||blocks!==manualBlocks)return;
+        if(blocks===manualBlocks)launchManualBooking(val,blocks,target,showManualOutside());
+    }, 'text', details);
+};
+function launchManualBooking(val,blocks,target,allowOutside){
+        if(!val||!val.trim()){showToast('El nombre del evento es obligatorio.','error');return}
+        if(!closuresReady){showToast('Espera a que se cargue el calendario de cierres.','error');return}
+        if(!manualTargetIsCurrent(target)||manualSaving||!blocks.length||!db)return;
         var now=new Date(), reservations=db.collection('reservas');
         var refs=blocks.map(function(){return reservations.doc()});
         var code='R-MAN-'+refs[0].id.toUpperCase()+'-'+now.getFullYear();
@@ -1293,9 +1529,230 @@ $('res').onclick = function() {
             historial: [{ estado: 'aprobada', obs: 'Reserva directa desde panel', por: who, cuando: now.getTime() }]
         };
 
-        manualPending={target:target,blocks:blocks,refs:refs,record:o,next:0};
+        manualPending={target:target,blocks:blocks,refs:refs,record:o,next:0,allowOutside:!!allowOutside};
         saveManualBlocks(manualPending);
-    }, 'text', details);
+}
+
+function clockMinutes(time){var parts=time.split(':');return parts.length===2?+parts[0]*60 + +parts[1]:NaN}
+var quickDraft=null, DAY_MS=86400000;
+function quickDayStamp(date){return /^\d{4}-\d{2}-\d{2}$/.test(date)?Date.parse(date+'T00:00:00Z'):NaN}
+function quickDayIso(stamp){return new Date(stamp).toISOString().slice(0,10)}
+function quickWeekStart(date){var stamp=quickDayStamp(date);return stamp-((new Date(stamp).getUTCDay()+6)%7)*DAY_MS}
+function quickSetRange(a,b){
+    if(a===b)quickDraft.excluded.delete(a);
+    $('quickFrom').value=a<b?a:b;$('quickTo').value=a<b?b:a;
+    renderQuickPlan();
+}
+function quickPlanDates(){
+    var dates=new Set(quickDraft.extraDates),from=$('quickFrom').value,to=$('quickTo').value;
+    var repeat=+$('quickRepeat').value, until=$('quickUntil').value;
+    if(!from&&!to)return {dates:Array.from(dates).sort(),error:repeat?'Selecciona un rango para repetir.':''};
+    var start=quickDayStamp(from),end=quickDayStamp(to);
+    if(!Number.isFinite(start)||!Number.isFinite(end)||from<iso(new Date())||end<start)return {dates:Array.from(dates).sort(),error:'Indica un rango válido desde hoy.'};
+    var limit=repeat?quickDayStamp(until):end, error='';
+    if(!Number.isFinite(limit)||limit<end){limit=end;error='Indica una fecha de repetición igual o posterior al final del rango.'}
+    var baseDays=(end-start)/DAY_MS+1;
+    for(var day=start;day<=limit;day+=DAY_MS){
+        if(day<=end||(repeat&&(day-start)/DAY_MS%repeat<baseDays))dates.add(quickDayIso(day));
+        if(dates.size>3660)return {dates:[],error:'Elige un rango más corto para poder revisar los horarios.'};
+    }
+    return {dates:Array.from(dates).sort(),error:error};
+}
+function quickSlots(date){return quickDraft.edits.get(date)||[{start:$('quickStart').value,end:$('quickEnd').value}]}
+function quickBlock(date,slot){return {fecha:date,inicio:clockMinutes(slot.start),fin:slot.end==='00:00'?1440:clockMinutes(slot.end)}}
+function inspectQuickDay(date,occupied,now){
+    var slots=quickSlots(date).map(function(slot){return quickBlock(date,slot)}).sort(function(a,b){return a.inicio-b.inicio});
+    var closed=closuresFor(sede,date);
+    if(closed.length)return {slots:slots,issue:closureText(closed)};
+    if(slots.some(function(b){return !(b.inicio<b.fin)}))return {slots:slots,issue:'Revisa las horas de inicio y fin.'};
+    if(slots.some(function(b,i){return i>0&&slots[i-1].fin>b.inicio}))return {slots:slots,issue:'Los horarios de este día se cruzan entre sí.'};
+    var allowOutside=$('quickOutside').checked;
+    if(slots.some(function(b){return manualUnavailable(date,b.inicio,b.fin,now,allowOutside)}))return {slots:slots,issue:!allowOutside&&slots.some(function(b){return outsideAttention(date,b.inicio,b.fin)})?'Fuera del horario de atención. Puedes habilitar el horario excepcional.':'La fecha u hora ya pasó.'};
+    var overlap=slots.map(function(b){return manualConflict(occupied,date,b.inicio,b.fin)}).find(Boolean);
+    return {slots:slots,issue:overlap?'Coincide con '+(overlap.titulo||overlap.motivo||'una reserva')+' ('+hm(overlap.inicio)+'–'+hm(overlap.fin)+').':''};
+}
+function quickReview(){
+    var occupied=cur(),now=new Date();
+    var blocks=[],issues=[],days=0;
+    quickDraft.plan.dates.forEach(function(date){
+        if(quickDraft.excluded.has(date))return;
+        var result=inspectQuickDay(date,occupied,now);
+        if(result.issue)issues.push({fecha:date,text:result.issue});
+        blocks.push.apply(blocks,result.slots);days++;
+    });
+    return {blocks:blocks,issues:issues,days:days};
+}
+function paintQuickReview(){
+    var review=quickReview(), issuesByDay=new Map(review.issues.map(function(issue){return [issue.fecha,issue.text]}));
+    var summary=review.days+' '+(review.days===1?'día':'días')+' · '+review.blocks.length+' '+(review.blocks.length===1?'bloque':'bloques');
+    $('quickSummary').textContent=summary+(review.issues.length?' · '+review.issues.length+' por revisar':'');
+    $('quickSkip').hidden=!review.issues.length;
+    $('quickSave').disabled=!!quickDraft.plan.error||!review.blocks.length||!!review.issues.length||!closuresReady;
+    $('quickRows').querySelectorAll('[data-q-review-day]').forEach(function(row){
+        var date=row.dataset.qReviewDay,excluded=quickDraft.excluded.has(date);
+        row.classList.toggle('q-excluded',excluded);
+        row.querySelector('.quick-status').textContent=excluded?'Fecha omitida':issuesByDay.get(date)||'';
+        row.querySelectorAll('.quick-slots input, .quick-slots button').forEach(function(el){el.disabled=excluded});
+    });
+}
+function renderQuickPlan(){
+    quickDraft.plan=quickPlanDates();quickDraft.selected=new Set(quickDraft.plan.dates);
+    $('quickUntilField').hidden=$('quickRepeat').value==='0';
+    $('quickUntil').min=$('quickTo').value||iso(new Date());
+    var list=$('quickRows'), scroll=list.scrollTop;
+    list.innerHTML=quickDraft.plan.dates.map(function(date){
+        var nice=fmtDayNice(date),slots=quickSlots(date);
+        return '<div class="quick-date" data-q-review-day="'+date+'"><div class="quick-date-head">'
+          +'<label><input type="checkbox" data-q-include '+(quickDraft.excluded.has(date)?'':'checked')+'> <b>'+esc(nice)+'</b></label>'
+          +'<span class="quick-status"></span></div><div class="quick-slots">'
+          +slots.map(function(slot,i){
+              return '<div class="quick-time" data-q-slot="'+i+'"><label>Inicio<input type="time" data-q-time="start" aria-label="Inicio, '+qa(nice)+'" value="'+qa(slot.start)+'"></label>'
+                +'<label>Fin<input type="time" data-q-time="end" aria-label="Fin, '+qa(nice)+'" value="'+qa(slot.end)+'"></label>'
+                +(slots.length>1?'<button type="button" class="sec" data-q-remove-slot aria-label="Quitar horario">×</button>':'')+'</div>';
+          }).join('')+'<button type="button" class="sec" data-q-add-slot style="margin-top:7px">＋ Otro horario</button></div></div>';
+    }).join('')||'<p class="mut" style="padding:0 12px;">Selecciona las fechas en el calendario.</p>';
+    list.scrollTop=scroll;$('quickError').textContent=quickDraft.plan.error;
+    paintQuickDays();paintQuickReview();
+}
+function paintQuickDays(){
+    var drag=quickDraft.drag;
+    var lower=drag&&(drag.start<drag.end?drag.start:drag.end), upper=drag&&(drag.start<drag.end?drag.end:drag.start);
+    $('quickCalendar').querySelectorAll('[data-q-day]').forEach(function(day){
+        var date=day.dataset.qDay, closed=closuresFor(sede,date);
+        var selected=!quickDraft.excluded.has(date)&&(drag?(date>=lower&&date<=upper)||quickDraft.extraDates.has(date):quickDraft.selected.has(date));
+        day.classList.toggle('q-selected',selected);day.setAttribute('aria-pressed',String(selected));
+        day.classList.toggle('q-closed',!!closed.length);
+        day.title=closed.length?closureText(closed):fmtDayNice(date);
+        day.setAttribute('aria-label',fmtDayNice(date)+(closed.length?', '+closureText(closed):''));
+    });
+}
+function renderQuickCalendar(){
+    var month=quickDraft.month,first=iso(month), begin=quickWeekStart(first),today=iso(new Date());
+    var name=MONTHS_FULL[month.getMonth()]+' de '+month.getFullYear();
+    $('quickMonth').textContent=name;
+    var html='<span></span>'+['Lu','Ma','Mi','Ju','Vi','Sá','Do'].map(function(day){return '<span class="quick-weekday">'+day+'</span>'}).join('');
+    for(var week=0;week<6;week++){
+        var weekDate=quickDayIso(begin+week*7*DAY_MS), last=quickDayIso(begin+(week*7+6)*DAY_MS);
+        html+='<button class="quick-week" type="button" aria-label="Seleccionar semana del '+qa(fmtDayNice(weekDate))+'" data-q-week="'+weekDate+'"'+(last<today?' disabled':'')+'>Sem</button>';
+        for(var day=0;day<7;day++){
+            var date=quickDayIso(begin+(week*7+day)*DAY_MS), cls=date.slice(0,7)===first.slice(0,7)?'':' q-other';
+            html+='<button class="quick-day'+cls+(date===today?' q-today':'')+'" type="button" data-q-day="'+date+'"'+(date<today?' disabled':'')+'>'+Number(date.slice(-2))+'</button>';
+        }
+    }
+    $('quickCalendar').innerHTML=html;paintQuickDays();
+}
+function moveQuickMonth(amount){
+    quickDraft.month.setMonth(quickDraft.month.getMonth()+amount);renderQuickCalendar();
+}
+$('quickOpen').onclick=function(){
+    if(!hasMod('res')||!sede||!aula||manualPending||manualSaving)return;
+    var today=iso(new Date()),first=manualBlocks.length?manualBlocks[0].fecha:iso(new Date(Math.max(Date.now(),weekStart.getTime())));
+    var month=new Date(first+'T12:00:00');month.setDate(1);
+    quickDraft={target:[sede,aula,manualSubValue(),curUid],month:month,drag:null,extraDates:new Set(),excluded:new Set(),edits:new Map(),selected:new Set()};
+    $('quickTarget').textContent=[sede,aula,manualSubValue()].filter(Boolean).join(' · ');
+    $('quickForm').reset();
+    $('quickOutside').checked=showManualOutside();
+    ['quickFrom','quickTo','quickUntil','quickExtraDate'].forEach(function(id){$(id).min=today});
+    $('quickStart').value=hm(pStart());$('quickEnd').value=hm(Math.min(pStart()+60,R.hFin*60)%1440);
+    manualBlocks.forEach(function(block){
+        quickDraft.extraDates.add(block.fecha);
+        var slots=quickDraft.edits.get(block.fecha)||[];
+        slots.push({start:hm(block.inicio),end:hm(block.fin%1440)});quickDraft.edits.set(block.fecha,slots);
+    });
+    if(!manualBlocks.length){$('quickFrom').value=first;$('quickTo').value=first}
+    renderQuickCalendar();renderQuickPlan();
+    $('dlgQuick').showModal();
+};
+$('quickPrev').onclick=function(){moveQuickMonth(-1)};
+$('quickNext').onclick=function(){moveQuickMonth(1)};
+$('quickAdd').onclick=function(){
+    var date=$('quickExtraDate').value;
+    if(!Number.isFinite(quickDayStamp(date))||date<iso(new Date())){$('quickError').textContent='Elige una fecha adicional desde hoy.';return}
+    quickDraft.extraDates.add(date);quickDraft.excluded.delete(date);$('quickExtraDate').value='';renderQuickPlan();
+};
+$('quickSkip').onclick=function(){
+    quickReview().issues.forEach(function(issue){quickDraft.excluded.add(issue.fecha)});
+    renderQuickPlan();
+};
+$('quickClose').onclick=function(){$('dlgQuick').close()};
+$('quickOutside').onchange=paintQuickReview;
+$('dlgQuick').addEventListener('close',function(){if(!$('dlgQuick').open)quickDraft=null});
+['quickFrom','quickTo'].forEach(function(id){$(id).onchange=function(){
+    if($('quickFrom').value&&!$('quickTo').value)$('quickTo').value=$('quickFrom').value;
+    if($('quickTo').value&&!$('quickFrom').value)$('quickFrom').value=$('quickTo').value;
+    if(Number.isFinite(quickDayStamp(this.value))){quickDraft.month=new Date(this.value+'T12:00:00');quickDraft.month.setDate(1);renderQuickCalendar()}
+    renderQuickPlan();
+}});
+['quickStart','quickEnd','quickRepeat','quickUntil'].forEach(function(id){$(id).onchange=renderQuickPlan});
+var quickCalendar=$('quickCalendar');
+quickCalendar.addEventListener('pointerdown',function(ev){
+    var day=ev.target.closest('[data-q-day]');
+    if(!day||day.disabled||ev.button!==0||!quickDraft||quickDraft.drag)return;
+    ev.preventDefault();
+    quickDraft.drag={id:ev.pointerId,start:ev.shiftKey&&$('quickFrom').value?$('quickFrom').value:day.dataset.qDay,end:day.dataset.qDay};
+    if(quickCalendar.setPointerCapture)try{quickCalendar.setPointerCapture(ev.pointerId)}catch(_){}
+    paintQuickDays();
+});
+quickCalendar.addEventListener('pointermove',function(ev){
+    var drag=quickDraft&&quickDraft.drag;
+    if(!drag||drag.id!==ev.pointerId)return;
+    var hit=document.elementFromPoint(ev.clientX,ev.clientY), day=hit&&hit.closest('#quickCalendar [data-q-day]');
+    if(day&&!day.disabled&&drag.end!==day.dataset.qDay){drag.end=day.dataset.qDay;paintQuickDays()}
+});
+window.addEventListener('pointerup',function(ev){
+    var drag=quickDraft&&quickDraft.drag;
+    if(!drag||drag.id!==ev.pointerId)return;
+    quickDraft.drag=null;quickSetRange(drag.start,drag.end);
+});
+function cancelQuickDrag(ev){if(quickDraft&&quickDraft.drag&&quickDraft.drag.id===ev.pointerId){quickDraft.drag=null;paintQuickDays()}}
+quickCalendar.addEventListener('pointercancel',cancelQuickDrag);quickCalendar.addEventListener('lostpointercapture',cancelQuickDrag);
+quickCalendar.addEventListener('click',function(ev){
+    var button=ev.target.closest('button');if(!button||button.disabled||!quickDraft)return;
+    if(button.dataset.qWeek){
+        var start=button.dataset.qWeek,today=iso(new Date());
+        quickSetRange(start<today?today:start,quickDayIso(quickDayStamp(start)+6*DAY_MS));
+    }else if(button.dataset.qDay&&ev.detail===0){
+        var date=button.dataset.qDay;quickSetRange(ev.shiftKey&&$('quickFrom').value?$('quickFrom').value:date,date);
+    }
+});
+$('quickRows').addEventListener('click',function(ev){
+    var button=ev.target.closest('button');if(!button)return;
+    var date=button.closest('[data-q-review-day]').dataset.qReviewDay, slots=quickSlots(date).slice();
+    if(button.hasAttribute('data-q-add-slot'))slots.push({start:'',end:''});
+    else if(button.hasAttribute('data-q-remove-slot'))slots.splice(+button.closest('[data-q-slot]').dataset.qSlot,1);
+    quickDraft.edits.set(date,slots);renderQuickPlan();
+    if(button.hasAttribute('data-q-add-slot'))$('quickRows').querySelector('[data-q-review-day="'+date+'"] [data-q-slot="'+(slots.length-1)+'"] input').focus();
+});
+function editQuickRow(ev){
+    var field=ev.target, row=field.closest('[data-q-review-day]');if(!row||!quickDraft)return;
+    var date=row.dataset.qReviewDay;
+    if(field.hasAttribute('data-q-include')){
+        if(field.checked)quickDraft.excluded.delete(date);else quickDraft.excluded.add(date);
+        paintQuickDays();
+    }else if(field.dataset.qTime){
+        var index=+field.closest('[data-q-slot]').dataset.qSlot, slots=quickSlots(date).slice();
+        slots[index]=Object.assign({},slots[index],{[field.dataset.qTime]:field.value});
+        quickDraft.edits.set(date,slots);
+    }else return;
+    paintQuickReview();
+}
+$('quickRows').addEventListener('input',editQuickRow);
+$('quickRows').addEventListener('change',editQuickRow);
+$('quickForm').onsubmit=function(ev){
+    ev.preventDefault();
+    if(!quickDraft||!manualTargetIsCurrent(quickDraft.target)||manualPending||manualSaving||!db)return;
+    var title=$('quickTitle').value.trim(), error=$('quickError');
+    if(!title){error.textContent='Ingresa el nombre del evento.';return}
+    if(!closuresReady){error.textContent='Espera a que se cargue el calendario de cierres.';return}
+    var target=quickDraft.target, fresh=quickPlanDates();quickDraft.plan=fresh;
+    var review=quickReview();
+    if(fresh.error||!review.blocks.length||review.issues.length){
+        paintQuickReview();
+        error.textContent=fresh.error||(review.issues.length?fmtDayNice(review.issues[0].fecha)+' · '+review.issues[0].text:'Selecciona al menos una fecha.');
+        return;
+    }
+    var allowOutside=$('quickOutside').checked;
+    manualBlocks=review.blocks;$('dlgQuick').close();paintManualSelection();launchManualBooking(title,manualBlocks,target,allowOutside);
 };
 $('dc').onclick=function(){$('dlg').close()};
 
@@ -1317,7 +1774,7 @@ function hasMod(mod) {
     if(!isAdmin()||(mod==='cfg'&&siteScope)) return false;
     var u = users.find(function(x){return x.id === curUid});
     if(!u||!u.activo)return false;
-    if(Array.isArray(u.modulos)) return u.modulos.indexOf(mod) >= 0;
+    if(Array.isArray(u.modulos)) return u.modulos.includes(mod)||(mod==='cierres'&&!siteScope&&u.modulos.includes('cfg'));
     return role === 'admin' ? true : ['hor','cal','rep'].indexOf(mod) >= 0;
 }
 function isSuper(){return hasMod('cfg');}
@@ -1326,12 +1783,13 @@ function viewAllowed(v){return v==='ini'||v==='portal'||hasMod(v==='panel'?'hor'
 function setView(v){
     if(!viewAllowed(v))return;
     view=v;
-    var m={ini:'vInicio',portal:'vPortal',cfg:'vConfig',res:'vReserva',hor:'vHorarios',rep:'vReportes',panel:'vPanel',cal:'vCalendario',ti:'vTi'};
+    var m={ini:'vInicio',portal:'vPortal',cfg:'vConfig',res:'vReserva',hor:'vHorarios',rep:'vReportes',panel:'vPanel',cal:'vCalendario',ti:'vTi',cierres:'vClosures'};
     Object.keys(m).forEach(function(k){$(m[k]).hidden=k!==v});
     document.querySelectorAll('.nav button').forEach(function(b){b.classList.toggle('act',b.dataset.v===v)});
     if(v==='cal'){syncCalSubSelect();renderCal()}
     if(v==='res'){syncManualSubSelect();renderManualGrid();renderList()}
     if(v==='ti'){$('tiDate').value=iso(new Date());renderTi()}
+    if(v==='cierres')renderClosures();
 }
 
 function applyDataScope(){
@@ -1349,17 +1807,19 @@ function applyRole(reset){
     var a = staff && !preview;
     var u=staff&&users.find(function(user){return user.id===curUid});
     var nextScope=u&&u.sedeAsignada||'';
-    if(reset||siteScope!==nextScope){
-        ['dlg2','dlgPrompt','dlgConfirm','dlgEditMods','dlgS','dlgA','dlgType'].forEach(function(id){var dlg=$(id);if(dlg&&dlg.open)dlg.close()});
+    var changed=reset||siteScope!==nextScope;
+    if(changed){
+        ['dlg2','dlgPrompt','dlgConfirm','dlgEditMods','dlgS','dlgA','dlgType','dlgQuick'].forEach(function(id){var dlg=$(id);if(dlg&&dlg.open)dlg.close()});
         curId=null;directCodeSearch='';sede='';aula='';
-        ['hSearchCode','hQ','hSede','rSede','cCalSede','tiSede','uSede'].forEach(function(id){$(id).value=''});
+        ['hSearchCode','hQ','hSede','rSede','cCalSede','tiSede','uSede','manualSearch'].forEach(function(id){$(id).value=''});
         syncUserScope('uSede','uMods');
-        $('dd').textContent='';$('notifList').textContent='';$('notifPanel').hidden=true;
+        $('dd').textContent='';$('closureList').textContent='';$('notifList').textContent='';$('notifPanel').hidden=true;
         P={step:1,tipo:'',sede:'',amb:[],blocks:[],week:monday(new Date()),f:{},code:''};
-        clearManualSelection();
+        clearManualSelection();$('manualOutside').checked=false;
     }
     siteScope=nextScope;
     applyDataScope();fillSelects();
+    if(changed)clearClosureForm();
     if(reset||P.step===1)renderPortal();
     document.body.classList.toggle('pub',!a);
     $('pBack').hidden=!(staff&&preview);
@@ -1368,6 +1828,7 @@ function applyRole(reset){
     $('navHor').hidden = !hasMod('hor');
     $('navRes').hidden = !hasMod('res');
     $('navCal').hidden = !hasMod('cal');
+    $('navClosures').hidden = !hasMod('cierres');
     $('navTi').hidden = !hasMod('ti');
     $('navRep').hidden = !hasMod('rep');
     $('navPanel').hidden = !hasMod('cfg');
@@ -1435,8 +1896,8 @@ function renderNotifs() {
         evts.push({ id: b.id, cod: b.grupo, t: b.creada, st: 'pendiente', desc: 'La reserva '+esc(b.aula)+' del '+b.fecha+' fue registrada. Solicitante: '+esc(b.nombre) });
         if(b.historial) {
             b.historial.forEach(function(h) {
-                var change=h.accion==='horario'?'reprogramada':h.estado==='aprobada'?'aprobada':h.estado==='rechazada'?'rechazada':'marcada como "Requiere Info"';
-                evts.push({ id: b.id, cod: b.grupo, t: h.cuando, st: h.accion==='horario'?'horario':h.estado, desc: 'La reserva '+esc(b.aula)+' del '+b.fecha+' fue '+change+' por '+esc(h.por)+'. '+(h.obs?esc(h.obs):'') });
+                var change=h.accion?'actualizada':h.estado==='aprobada'?'aprobada':h.estado==='rechazada'?'rechazada':'marcada como "Requiere Info"';
+                evts.push({ id: b.id, cod: b.grupo, t: h.cuando, st: h.accion||h.estado, desc: 'La reserva '+esc(b.aula)+' del '+b.fecha+' fue '+change+' por '+esc(h.por)+'. '+(h.obs?esc(h.obs):'') });
             });
         }
     });
@@ -1447,7 +1908,7 @@ function renderNotifs() {
     
     list.innerHTML = evts.map(function(e) {
         var c = e.st==='aprobada'?'apr':e.st==='rechazada'?'rej':e.st==='info'?'inf':'pen';
-        var tit = e.st==='horario'?'Horario actualizado':e.st==='aprobada'?'Reserva aprobada':e.st==='rechazada'?'Reserva rechazada':e.st==='info'?'Requiere información':'Reserva pendiente';
+        var tit = blockEditLabel(e.st)||(e.st==='aprobada'?'Reserva aprobada':e.st==='rechazada'?'Reserva rechazada':e.st==='info'?'Requiere información':'Reserva pendiente');
         var tc = e.st==='aprobada'?'var(--okb)':e.st==='rechazada'?'#ef4444':e.st==='info'?'#ea580c':'var(--penb)';
         return '<div class="n-item" data-nid="'+e.id+'" data-ncod="'+e.cod+'">'
              + '<div class="n-item-title"><i class="n-dot '+c+'"></i> <span style="color:'+tc+';">'+tit+'</span></div>'
@@ -1786,12 +2247,24 @@ function renderCal(){
     var subLabel = (hasSubFilter && cSub && cSub !== '__ALL__') ? ' · 🖥️ ' + cSub : (hasSubFilter && cSub === '__ALL__' ? ' · Todos los espacios' : '');
     $('cCalWk').textContent = 'Semana del '+calDayOf(0).getDate()+'/'+(calDayOf(0).getMonth()+1)+' al '+e.getDate()+'/'+(e.getMonth()+1) + subLabel;
 
-    var startM = R.hIni * 60, endM = R.hFin * 60, totalM = endM - startM;
+    var startM=R.hIni*60, endM=R.hFin*60, weekFrom=iso(calDayOf(0)), weekTo=iso(e);
+    var weekEvents=bookings.filter(function(b){
+        if(b.sede!==cS||(b.aulaBase||b.aula)!==cA||b.fecha<weekFrom||b.fecha>weekTo||b.estado==='rechazada')return false;
+        var sub=extractBookingSub(b,cA);
+        return !hasSubFilter||!cSub||cSub==='__ALL__'||!sub||sub===cSub;
+    });
+    weekEvents.forEach(function(b){
+        if(!Number.isFinite(b.inicio)||!Number.isFinite(b.fin))return;
+        startM=Math.min(startM,Math.max(0,Math.floor(b.inicio/60)*60));
+        endM=Math.max(endM,Math.min(1440,Math.ceil(b.fin/60)*60));
+    });
+    var totalM=endM-startM;
     
     var h = '<div class="cal-th" style="background:var(--pri2)">HORA</div>';
+    var closedDays=DAYS.map(function(_,d){return closuresFor(cS,iso(calDayOf(d)))});
     for(var d=0; d<7; d++) {
         var dd=calDayOf(d);
-        h += '<div class="cal-th">'+DAYS[d]+'<br><small>'+dd.getDate()+'/'+(dd.getMonth()+1)+'</small></div>';
+        h += '<div class="cal-th">'+DAYS[d]+'<br><small>'+dd.getDate()+'/'+(dd.getMonth()+1)+'</small>'+closureLabel(closedDays[d])+'</div>';
     }
     
     h += '<div style="position:relative; height:'+totalM+'px; border-right:1px solid var(--line); background:#f8fafc;">';
@@ -1802,20 +2275,11 @@ function renderCal(){
 
     for(var d=0; d<7; d++) {
         var date = iso(calDayOf(d));
-        var evts = bookings.filter(function(b){
-            var baseMatch = b.sede===cS && (b.aulaBase||b.aula)===cA && b.fecha===date && b.estado!=='rechazada';
-            if(!baseMatch) return false;
-            if(hasSubFilter && cSub && cSub !== '__ALL__') {
-                var bSub = extractBookingSub(b, cA);
-                // Muestra reservas del sub-espacio elegido o reservas que ocupen todo el ambiente
-                return !bSub || bSub === cSub;
-            }
-            return true;
-        });
+        var evts=weekEvents.filter(function(b){return b.fecha===date});
 
         var positionedEvts = layoutParallelEvents(evts);
 
-        h += '<div style="position:relative; height:'+totalM+'px; border-right:1px solid var(--line); border-bottom:1px solid var(--line);">';
+        h += '<div'+(closedDays[d].length?' class="cal-closure-day" title="'+qa(closureText(closedDays[d]))+'"':'')+' style="position:relative; height:'+totalM+'px; border-right:1px solid var(--line); border-bottom:1px solid var(--line);">';
         
         for(var m=startM; m<endM; m+=60) {
              h += '<div style="position:absolute; top:'+(m-startM)+'px; width:100%; height:60px; border-top:1px dashed var(--line); pointer-events:none;"></div>';
@@ -1830,6 +2294,7 @@ function renderCal(){
             if(height <= 0) return; 
             
             var cls = evt.estado === 'aprobada' ? 'apr' : evt.estado === 'info' ? 'inf' : 'pen';
+            var exception=exceptionalBlock(evt);
             var txt = esc(evt.titulo || evt.motivo);
             var reqs = evt.req&&evt.req.length ? '📦 ' : '';
             var bSub = extractBookingSub(evt, cA);
@@ -1843,9 +2308,9 @@ function renderCal(){
                 ? 'top:'+top+'px; height:'+height+'px; left:calc('+lPct+'% + 2px); width:calc('+wPct+'% - 4px); right:auto;'
                 : 'top:'+top+'px; height:'+height+'px;';
             
-            h += '<div class="cal-event '+cls+'" data-calopen="'+evt.id+'" style="'+posStyle+'" title="Clic para ver detalle">'
+            h += '<div class="cal-event '+cls+(exception?' exception':'')+'" data-calopen="'+evt.id+'" style="'+posStyle+'" title="'+(exception?'Horario excepcional · ':'')+'Clic para ver detalle">'
                + subBadge
-               + '<b style="display:block; margin-bottom:2px; font-size:10px;">'+hm(evt.inicio)+' - '+hm(evt.fin)+'</b>'
+               + '<b style="display:block; margin-bottom:2px; font-size:10px;">'+hm(evt.inicio)+' - '+hm(evt.fin)+(exception?' · Excepcional':'')+'</b>'
                + '<span style="font-weight:600;">'+reqs+txt+'</span>'
                + '</div>';
         });
@@ -2046,7 +2511,7 @@ $('pBody').addEventListener('click',function(ev){
       $('dlgType').showModal();
   }
   else if(a==='b2')goStep(1);
-  else if(a==='s2'){if(!P.amb.length||!P.blocks.length){showToast('Selecciona al menos un ambiente y un bloque de horario.', 'error');return}var bad=P.blocks.filter(function(b){return (b.z-b.a)*R.paso<R.durMin})[0];if(bad){showToast('Cada bloque debe durar al menos '+R.durMin+' minutos. Amplía el horario del '+bad.date+'.', 'error');return}goStep(3)}
+  else if(a==='s2'){if(!P.amb.length||!P.blocks.length){showToast('Selecciona al menos un ambiente y un bloque de horario.', 'error');return}if(!validatePortalSchedule())return;var bad=P.blocks.filter(function(b){return (b.z-b.a)*R.paso<R.durMin})[0];if(bad){showToast('Cada bloque debe durar al menos '+R.durMin+' minutos. Amplía el horario del '+bad.date+'.', 'error');return}goStep(3)}
   else if(a==='b3')goStep(2);
   else if(a==='prev'||a==='sig'){var nw=new Date(P.week);nw.setDate(nw.getDate()+(a==='sig'?7:-7));if(a==='prev'&&iso(nw)<iso(monday(new Date())))return;if(a==='sig'&&iso(nw)>maxDateIso())return;P.week=nw;renderPGrid()}
   else if(a==='hoy'){P.week=monday(new Date());renderPGrid()}
@@ -2064,10 +2529,11 @@ $('pBody').addEventListener('click',function(ev){
     if(l.length) {
         var res = l[0];
         var mixed=l.some(function(b){return b.estado!==res.estado});
+        var differentTitles=l.some(function(b){return (b.titulo||b.motivo)!==(res.titulo||res.motivo)});
         var dateReg = res.creada ? new Date(res.creada).toLocaleDateString('es-PE') : '';
         var dateRes = '';
         var revBy = '';
-        var lastH=(res.historial||[]).slice().reverse().find(function(entry){return entry.accion!=='horario'});
+        var lastH=(res.historial||[]).slice().reverse().find(function(entry){return !entry.accion});
         if(lastH){
             dateRes = new Date(lastH.cuando).toLocaleDateString('es-PE');
             revBy = lastH.por ? 'Revisado por: ' + lastH.por : '';
@@ -2089,6 +2555,7 @@ $('pBody').addEventListener('click',function(ev){
                  +     '<b style="color:var(--tx); font-size:13px;">🏛 '+esc(b.aula)+'</b>'
                  +     '<span style="color:var(--mut); font-size:13px;">· 📅 '+fmtDayNice(b.fecha)+'</span>'
                  +     '<span class="tag '+tcls(b.estado)+'">'+esc(elab(b.estado))+'</span>'
+                 +     (differentTitles?'<span style="flex-basis:100%;font-weight:600;">'+esc(b.titulo||b.motivo||'—')+'</span>':'')
                  +   '</div>'
                  +   '<div style="font-weight:700; color:#5a00cc; font-size:13px; background:#f5f0ff; padding:4px 12px; border-radius:99px; border:1px solid #e9d5ff;">'
                  +     '🕒 '+hm(b.inicio)+' – '+hm(b.fin)+' <span style="font-weight:500; font-size:11px;">('+hrsTxt+')</span>'
@@ -2108,7 +2575,7 @@ $('pBody').addEventListener('click',function(ev){
             + '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px; background:#f8fafc; border:1px solid var(--line); border-radius:14px; padding:14px 18px;">'
             +   '<div><span class="mut" style="font-size:11px; display:block;">Solicitante</span><b style="font-size:13px; color:var(--tx);">👤 '+esc(res.nombre||'—')+'</b></div>'
             +   '<div><span class="mut" style="font-size:11px; display:block;">Sede</span><b style="font-size:13px; color:var(--tx);">📍 '+esc(res.sede||'—')+'</b></div>'
-            +   '<div><span class="mut" style="font-size:11px; display:block;">Evento / Motivo</span><b style="font-size:13px; color:var(--tx);">🎯 '+esc(res.titulo||res.motivo||'—')+'</b></div>'
+            +   '<div><span class="mut" style="font-size:11px; display:block;">Evento / Motivo</span><b style="font-size:13px; color:var(--tx);">🎯 '+(differentTitles?'Ver título de cada bloque':esc(res.titulo||res.motivo||'—'))+'</b></div>'
             + '</div>'
             + (l.length===1?renderTimeline(res.estado, res.obs, [dateReg, dateRes], revBy):'')
             + '<div style="margin-top:18px;">'
@@ -2125,7 +2592,16 @@ $('pBody').addEventListener('click',function(ev){
   }
 });
 
+function validatePortalSchedule(){
+  if(!closuresReady){showToast('Espera a que se cargue el calendario de cierres.','error');return false}
+  var blocked=P.blocks.find(function(b){return closuresFor(P.sede,b.date).length>0});
+  if(blocked){showToast(closedMessage(P.sede,blocked.date),'error');if(P.step!==2)goStep(2);return false}
+  var outside=P.blocks.find(function(b){return outsideAttention(b.date,pStart()+b.a*R.paso,pStart()+b.z*R.paso)});
+  if(outside){showToast('El bloque del '+fmtDayNice(outside.date)+' está fuera del horario de atención.','error');if(P.step!==2)goStep(2);return false}
+  return true;
+}
 function sendReq(){var f=P.f;if(!db){showToast('No se pudo conectar con el sistema.', 'error');return}
+  if(!validatePortalSchedule())return;
   if(!Object.hasOwn(sedes,P.sede)||!P.blocks.length||!P.amb.length||P.amb.some(function(k){return k.split('|')[0]!==P.sede}))return;
   var need=['nombres','apellidos','dni','cargo','area','tel','tipoEv','titulo','asist','prop'];
   for(var i=0;i<need.length;i++)if(!String(f[need[i]]||'').trim()){showToast('Completa los campos obligatorios (*).', 'error');return}
@@ -2270,13 +2746,14 @@ function renderPGrid(){
     +   '</div>'
     +   '<div class="wrap"><div class="pgrid-table"><div class="ph-col">Hora</div>';
 
+  var closedDays=DAYS.map(function(_,d){return closuresFor(P.sede,iso(pday(d)))});
   for(var d=0;d<7;d++){
       var dd=pday(d), isTd=(iso(dd)===td);
       var lbl = DAYS_CAP[d] + ' ' + dd.getDate() + '/' + MONTHS_SHORT[dd.getMonth()];
       if(isTd){
-          h+='<div class="ph-col today"><div class="today-pill">'+DAYS_CAP[d]+'<br>'+dd.getDate()+'/'+MONTHS_SHORT[dd.getMonth()]+'</div></div>';
+          h+='<div class="ph-col today"><div class="today-pill">'+DAYS_CAP[d]+'<br>'+dd.getDate()+'/'+MONTHS_SHORT[dd.getMonth()]+'</div>'+closureLabel(closedDays[d])+'</div>';
       } else {
-          h+='<div class="ph-col">'+lbl+'</div>';
+          h+='<div class="ph-col">'+lbl+closureLabel(closedDays[d])+'</div>';
       }
   }
 
@@ -2284,17 +2761,19 @@ function renderPGrid(){
     var m=pStart()+sl*R.paso;
     h+='<div class="pt-cell">'+hm(m)+'</div>';
     for(var d2=0;d2<7;d2++){
-      var dayObj=pday(d2), date=iso(dayObj), dw=dayObj.getDay();
+      var date=iso(pday(d2));
       var blk=P.blocks.find(function(b){return b.date===date&&sl>=b.a&&sl<b.z});
       var beyond=date>mx;
-      var hdConf = (R.hd && R.hd[dw]) ? R.hd[dw] : {a: dw!==0?1:0, i: R.hIni, f: dw===6?12:R.hFin};
-      var noAtiende = !hdConf.a || (m < hdConf.i * 60 || m >= hdConf.f * 60);
+      var noAtiende=outsideAttention(date,m,m+R.paso);
       var isPast=date<td||(date===td&&m+R.paso<=nowM);
-      var busySt=(!beyond&&!noAtiende&&!isPast)?pBusyState(date,m):null;
+      var dayClosed=closedDays[d2];
+      var busySt=(!dayClosed.length&&!beyond&&!noAtiende&&!isPast)?pBusyState(date,m):null;
       var soon=(!beyond&&!noAtiende&&!isPast&&!busySt)&&pTooSoon(date,m);
 
       var cls='pc', txt='+ Lib.';
-      if(blk){
+      if(dayClosed.length){
+          cls+=' x closure-cell';txt=sl===0?'🔒 Cerrado':'—';
+      } else if(blk&&!noAtiende){
           cls+=' sel';
           if(sl===blk.a){
               txt='✔ '+hm(pStart()+blk.a*R.paso)+' -<br>'+hm(pStart()+blk.z*R.paso);
@@ -2317,7 +2796,7 @@ function renderPGrid(){
           cls+=' x soon';
           txt='🕒 Req. '+R.antMinH+'h<br>ant.';
       }
-      h+='<div class="'+cls+'" data-d="'+d2+'" data-s="'+sl+'">'+txt+'</div>';
+      h+='<div class="'+cls+'" data-d="'+d2+'" data-s="'+sl+'"'+(dayClosed.length?' title="'+qa(closureText(dayClosed))+'"':'')+'>'+txt+'</div>';
     }
   }
   h += '</div></div></div>';
@@ -2339,6 +2818,7 @@ function renderPGrid(){
                +     '<b style="color:#0f172a; font-size:14px;">'+fmtDayNice(b.date)+':</b>'
                +     '<span style="color:#5a00cc; font-weight:600; font-size:14px;">'+hm(pStart()+b.a*R.paso)+' a '+hm(pStart()+b.z*R.paso)+' <span style="font-weight:400;">('+hrsTxt+')</span></span>'
                +   '</div>'
+               +   closureLabel(closuresFor(P.sede,b.date))
                +   '<button type="button" data-rmblk="'+b.date+'" title="Quitar este día" style="background:transparent; color:#ef4444; border:none; font-size:16px; padding:2px 8px; cursor:pointer;">✕</button>'
                + '</div>';
       }).join('');
@@ -2354,14 +2834,13 @@ function renderPGrid(){
 }
 
 function cellBad(date, sl){
-  var m = pStart() + sl * R.paso, dObj = new Date(date + 'T00:00:00'), dw = dObj.getDay();
+  var m = pStart() + sl * R.paso;
   var now = new Date(), td = iso(now), nowM = now.getHours() * 60 + now.getMinutes();
   
-  var hdConf = (R.hd && R.hd[dw]) ? R.hd[dw] : {a: dw!==0?1:0, i: R.hIni, f: dw===6?12:R.hFin};
-  var noAtiende = !hdConf.a || (m < hdConf.i * 60 || m >= hdConf.f * 60);
+  var noAtiende=outsideAttention(date,m,m+R.paso);
   
   var isPast = date < td || (date === td && m + R.paso <= nowM);
-  return noAtiende || isPast || pTooSoon(date, m) || pBusy(date, m);
+  return closuresFor(P.sede,date).length>0 || noAtiende || isPast || pTooSoon(date, m) || pBusy(date, m);
 }
 var pdrag=null;
 $('pBody').addEventListener('pointerdown',function(ev){var el=ev.target.closest('.pc');if(!el||el.classList.contains('x'))return;var date=iso(pday(+el.dataset.d)),sl=+el.dataset.s,mx=Math.floor(R.durMax/R.paso);
@@ -2677,6 +3156,7 @@ fillReg();
 var curId=null, detailSchedule=null, savingBlocks=new Set();
 function tcls(e){return e==='aprobada'?'apr':e==='rechazada'?'rej':e==='info'?'inf':'pen'}
 function elab(e){return e==='info'?'requiere información':(e||'')}
+function blockEditLabel(action){return action==='titulo'?'Título actualizado':action==='horario'?'Fecha u horario actualizado':action==='datos'?'Título y horario actualizados':''}
 function updMail(){var b=bookings.find(function(x){return x.id===curId}),a=$('dmail');if(!b||!b.correo){a.hidden=true;return}a.hidden=false;a.href='mailto:'+encodeURIComponent(b.correo)+'?subject='+encodeURIComponent('Reserva '+b.aula+' · '+b.fecha)+'&body='+encodeURIComponent($('dobs').value)}
 
 function confirmDeleteBlock(id){
@@ -2690,23 +3170,26 @@ function confirmDeleteBlock(id){
 
 function openDetail(id, readOnly){
   var b=bookings.find(function(x){return x.id===id});if(!b)return;curId=id;
-  detailSchedule={fecha:b.fecha,inicio:b.inicio,fin:b.fin};
+  detailSchedule={fecha:b.fecha,inicio:b.inicio,fin:b.fin,titulo:b.titulo||b.motivo||'',fromManual:!readOnly&&view==='res'&&hasMod('res')};
   var r=function(l,v){return v?'<tr><th style="width:38%">'+l+'</th><td>'+v+'</td></tr>':''};
-  var hist=(b.historial||[]).slice().reverse().map(function(h){return '<div class="item"><span class="tag '+(h.accion==='horario'?'':tcls(h.estado))+'">'+(h.accion==='horario'?'Fecha u horario actualizado':elab(h.estado))+'</span> '+esc(h.por)+' · '+new Date(h.cuando).toLocaleString('es-PE')+(h.obs?'<br>'+esc(h.obs):'')+'</div>'}).join('');
+  var hist=(b.historial||[]).slice().reverse().map(function(h){return '<div class="item"><span class="tag '+(h.accion?'':tcls(h.estado))+'">'+(blockEditLabel(h.accion)||elab(h.estado))+'</span> '+esc(h.por)+' · '+new Date(h.cuando).toLocaleString('es-PE')+(h.obs?'<br>'+esc(h.obs):'')+'</div>'}).join('');
   
   var showAdmin = isAdmin() && !readOnly;
   var editHtml = showAdmin ?
     '<div style="background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:12px; margin-top:12px; margin-bottom:12px;">'
-    + '<b style="display:block; margin-bottom:8px; color:var(--pri);">✏️ Fecha y horario de este bloque</b>'
+    + '<b style="display:block; margin-bottom:8px; color:var(--pri);">✏️ Datos de este bloque</b>'
+    + '<label for="eTitle">Título del evento</label><input type="text" id="eTitle" maxlength="180" value="'+qa(detailSchedule.titulo)+'" style="background:#fff;">'
     + '<label for="eFecha">Fecha</label><input type="date" id="eFecha" value="'+qa(b.fecha)+'" style="background:#fff;">'
     + '<div class="f2" style="gap:10px;"><div><label for="eIni">Hora de inicio</label><input type="time" id="eIni" value="'+hm(b.inicio)+'" style="margin:0; background:#fff;"></div>'
     + '<div><label for="eFin">Hora de fin</label><input type="time" id="eFin" value="'+hm(b.fin%1440)+'" style="margin:0; background:#fff;"></div></div>'
     + '<p class="mut" style="margin:8px 0; font-size:11px;">Usa 00:00 como hora de fin si el bloque cierra a medianoche.</p>'
-    + '<button class="sec" data-r="horario">Guardar fecha y horario</button></div>'
+    + (detailSchedule.fromManual?'<label class="exception-option" for="eOutside"><input id="eOutside" type="checkbox"> Permitir horario excepcional para este bloque</label>':'')
+    + '<button class="sec" data-r="horario">Guardar cambios del bloque</button></div>'
     : '';
 
   $('dd').innerHTML='<div class="bar"><b>Detalle del bloque</b><span class="tag '+tcls(b.estado)+'">'+elab(b.estado)+'</span></div><table>'
    +r('Sede / ambiente',esc(b.sede)+' · '+esc(b.aula))+r('Fecha',b.fecha)+r('Horario',hm(b.inicio)+' – '+hm(b.fin)+' ('+(b.fin-b.inicio)/60+' h)')
+   +(exceptionalBlock(b)?r('Atención','<span class="tag exception">Horario excepcional</span>'):'')
    +r('Solicitante',esc(b.nombre))+r('Documento (DNI)',esc(b.dni))+r('Tipo de solicitante',esc(b.tipoUsuario))+r('Correo',esc(b.correo))+r('Teléfono',esc(b.telefono))+r('Cargo',esc(b.cargo))+r('Área / dependencia',esc(b.area))
    +r('Evento',esc(b.titulo))+r('Tipo de evento',esc(b.tipoEvento||b.tipoMotivo))+r('Asistentes',esc(b.asistentes||''))+r('Propósito / justificación',esc(b.motivo))+r('Requerimientos',esc((b.req||[]).join(', ')||'Solo el ambiente')+(b.reqExtra?' · '+esc(b.reqExtra):''))
    +r('Código de solicitud',esc(b.grupo))+r('Bloques con este código',grpTxt(b))
@@ -2738,21 +3221,25 @@ async function resolve(action){
   var id=curId, original=detailSchedule, actor=curUid;
   if(!id||!original||!db||!isAdmin()||$('dadm').hidden||!$('dlg2').open||savingBlocks.has(id))return;
   var note=$('dobs').value.trim(), reschedule=action==='horario';
+  var wantsException=original.fromManual&&$('eOutside')&&$('eOutside').checked;
   if((action==='rechazada'||action==='info')&&!note){showToast('Escribe una observación para explicar la decisión.', 'error');return}
 
-  var schedule=null;
+  var schedule=null, title=null;
   if(reschedule||action==='aprobada'){
     var date=$('eFecha').value, start=$('eIni').value, end=$('eFin').value;
-    var minutes=function(time){var parts=time.split(':');return +parts[0]*60 + +parts[1]};
-    schedule={fecha:date,inicio:minutes(start),fin:end==='00:00'?1440:minutes(end)};
+    schedule={fecha:date,inicio:clockMinutes(start),fin:end==='00:00'?1440:clockMinutes(end)};
     if(!date||!start||!end||schedule.fin<=schedule.inicio){showToast('Indica una fecha y un horario válido.', 'error');return}
-    if(sameBlockSchedule(schedule,original)){
-      if(reschedule){showToast('Cambia la fecha o el horario antes de guardar.', 'info');return}
-      schedule=null;
+    if(sameBlockSchedule(schedule,original))schedule=null;
+    var requestedTitle=$('eTitle').value.trim();
+    if(requestedTitle!==original.titulo){
+      if(!requestedTitle||requestedTitle.length>180){showToast('Ingresa un título de hasta 180 caracteres.', 'error');return}
+      title=requestedTitle;
     }
+    if(reschedule&&!schedule&&title===null){showToast('Cambia el título, la fecha o el horario antes de guardar.', 'info');return}
   }
 
   var ref=db.collection('reservas').doc(id), author=who||'Personal', when=Date.now();
+  var editAction=title!==null?(schedule?'datos':'titulo'):'horario';
   savingBlocks.add(id);
   $('dadm').querySelectorAll('button[data-r]').forEach(function(button){button.disabled=true});
   try{
@@ -2761,21 +3248,37 @@ async function resolve(action){
       if(!snapshot.exists||!block)throw new Error('El bloque ya no existe.');
       if(!isAdmin()||curUid!==actor||(siteScope&&siteScope!==block.sede))throw new Error('Ya no tienes acceso a este bloque.');
       if(schedule&&!sameBlockSchedule(block,original))throw new Error('El horario ya cambió. Cierra y vuelve a abrir el bloque.');
+      if(title!==null&&(block.titulo||block.motivo||'')!==original.titulo)throw new Error('El título ya cambió. Cierra y vuelve a abrir el bloque.');
 
       var state=reschedule?block.estado:action, updated=Object.assign({},block,schedule,{estado:state});
+      if(title!==null)updated.titulo=title;
+      if(state!=='rechazada'&&(schedule||action==='aprobada')){
+        var calendar=await transaction.get(db.doc('config/general'));
+        var matches=closureEntries(calendar.data()).filter(function(entry){return closureApplies(entry,block.sede,updated.fecha)});
+        if(matches.length)throw new Error('La fecha está bloqueada. '+closureText(matches));
+        if(!isAdmin()||curUid!==actor||(siteScope&&siteScope!==block.sede))throw new Error('Ya no tienes acceso a este bloque.');
+      }
+      var timingChanged=!!schedule||(action==='aprobada'&&block.estado!=='aprobada');
+      var outside=timingChanged&&outsideAttention(updated.fecha,updated.inicio,updated.fin);
+      if(outside&&!(wantsException&&view==='res'&&hasMod('res'))){
+        throw new Error(original.fromManual?'Activa el horario excepcional para guardar este bloque.':'Este horario está fuera de atención. Haz el cambio desde Reserva Manual con el horario excepcional.');
+      }
       if(state!=='rechazada'&&(schedule||block.estado==='rechazada')&&blockHasConflict(id,updated)){
         throw new Error('El ambiente ya está ocupado en ese horario.');
       }
       var entry={estado:state,obs:note,por:author,cuando:when};
-      if(reschedule)entry.accion='horario';
+      if(outside)entry.fueraDeHorario=true;
+      if(reschedule)entry.accion=editAction;
       var changes={historial:(block.historial||[]).concat(entry)};
       if(!reschedule){changes.estado=state;changes.obs=note}
       if(schedule)Object.assign(changes,schedule);
+      if(timingChanged&&(outside||block.fueraDeHorario))changes.fueraDeHorario=outside;
+      if(title!==null)changes.titulo=title;
       transaction.update(ref,changes);
       return updated;
     });
     if(curId===id)$('dlg2').close();
-    showToast(reschedule?'Fecha y horario del bloque actualizados':'Estado del bloque actualizado a '+elab(action),'success');
+    showToast(reschedule?blockEditLabel(editAction):'Estado del bloque actualizado a '+elab(action),'success');
     if(!reschedule)enviarCorreoFirebase(Object.assign({},saved,{bloques:null,soloBloque:true}),action,note);
   }catch(e){err(e)}finally{
     savingBlocks.delete(id);
@@ -3078,6 +3581,7 @@ try {
     // Logo Institucional
     db.doc('config/general').onSnapshot(function(s){
         var v = s && typeof s.data === 'function' ? s.data() : s.data;
+        closures=closureEntries(v);closuresReady=true;render();
         if(v && v.logo) {
             document.querySelectorAll('.logo').forEach(function(el) {
                 el.innerHTML = '<img src="' + qa(v.logo) + '" style="max-height: 38px; object-fit: contain;">';
@@ -3090,7 +3594,7 @@ try {
                 $('sysLogoPrev').hidden = false;
             }
         }
-    });
+    },function(){closuresReady=false});
 
 } catch (e) {
     console.error("Error inicializando Firebase:", e);
